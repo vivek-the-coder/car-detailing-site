@@ -69,21 +69,6 @@ export default function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="w-full pt-8 mt-4 border-t border-white/10"
-              >
-                <Link
-                  href="/book"
-                  onClick={handleNavClick}
-                  className="w-full py-5 block text-center rounded-full bg-luxury-accent text-black font-bold uppercase tracking-[0.3em] text-[13px] shadow-[0_0_40px_rgba(0,255,65,0.3)] active:scale-95 transition-transform"
-                >
-                  Establish Aura
-                </Link>
-              </motion.div>
             </div>
           </motion.div>
         )}
@@ -107,37 +92,32 @@ export default function Navbar() {
               priority
             />
           </Link>
+        </div>
 
-          {/* Centered links - Desktop */}
-          <div className="hidden lg:flex items-center gap-10">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={handleNavClick}
-                className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40 hover:text-luxury-accent transition-all duration-300 relative group"
-              >
-                <span className="relative z-10">{link.name}</span>
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-luxury-accent transition-all duration-500 group-hover:w-full" />
-              </Link>
-            ))}
-          </div>
+        {/* Centered links - Desktop - ABSOLUTE CENTER */}
+        <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-10">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              onClick={handleNavClick}
+              className="text-[10px] uppercase tracking-[0.25em] font-bold text-white/40 hover:text-luxury-accent transition-all duration-300 relative group"
+            >
+              <span className="relative z-10">{link.name}</span>
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-luxury-accent transition-all duration-500 group-hover:w-full" />
+            </Link>
+          ))}
         </div>
 
         {/* Right Actions Cluster */}
         <div className="flex items-center gap-4 md:gap-8">
-          <div className="hidden xl:flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/5 bg-white/[0.03]">
-            <span className="w-1.5 h-1.5 rounded-full bg-luxury-accent animate-pulse shadow-[0_0_8px_#00ff41]" />
-            <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-white/40">Studio Operational</span>
-          </div>
-
           <div className="flex items-center gap-4">
             <Link
               href="/book"
               onClick={handleNavClick}
               className="hidden sm:block py-2.5 px-8 md:px-10 rounded-full bg-luxury-accent text-black text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-white hover:scale-[1.03] transition-all shadow-[0_10px_20px_rgba(0,255,65,0.2)] active:scale-95"
             >
-              Establish Aura
+              Book Now
             </Link>
 
             {/* Hamburger */}
