@@ -53,6 +53,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
           >
+            <Navbar />
             <Hero />
             <HeroDesktop />
             <ScrollCanvas />
@@ -62,6 +63,7 @@ export default function Home() {
             <Features />
             <Pricing />
             <CTA />
+            <Footer />
           </motion.div>
         )}
       </AnimatePresence>

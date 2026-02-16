@@ -11,7 +11,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  const [pathname, setPathname] = useState("");
+
   useEffect(() => {
+    setPathname(window.location.pathname);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -25,22 +28,30 @@ export default function Navbar() {
     }
   }, [isOpen]);
 
+  const isHome = pathname === "/";
+
   const navLinks = [
-    { name: "Services", href: "/services" },
+    { name: "Services", href: isHome ? "#services" : "/services" },
+    { name: "Portfolio", href: isHome ? "#portfolio" : "/portfolio" },
+    { name: "Pricing", href: isHome ? "#pricing" : "/pricing" },
     { name: "Protection", href: "/protection" },
-    { name: "Portfolio", href: "/portfolio" },
-    { name: "Pricing", href: "/pricing" },
     { name: "About Us", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: "Contact", href: isHome ? "#contact" : "/contact" },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (window.location.pathname === href) {
-      e.preventDefault();
-      setIsOpen(false);
+    setIsOpen(false);
+
+    // If it's an anchor link on the same page, the scroll-smooth will handle it
+    if (href.startsWith("#") && isHome) {
+      // Allow default anchor behavior
       return;
     }
-    setIsOpen(false);
+
+    if (pathname === href) {
+      e.preventDefault();
+      return;
+    }
   };
 
   return (
