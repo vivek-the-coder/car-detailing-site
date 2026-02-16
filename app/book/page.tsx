@@ -62,11 +62,11 @@ This booking request was submitted via the official website.`;
 
                 <div className="container-lux relative z-10 text-center">
                     <FadeIn direction="up">
-                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-8">Reservation</p>
-                        <h1 className="text-5xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[0.95] uppercase italic">
+                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-6 md:mb-8">Reservation</p>
+                        <h1 className="text-4xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[1.1] md:leading-[0.95] uppercase italic">
                             Secure your <span className="text-luxury-accent">Aura</span>
                         </h1>
-                        <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed italic">
+                        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-light leading-relaxed italic">
                             Professional detailing tailored to your schedule. Complete the form below to initiate your transformation via WhatsApp.
                         </p>
                     </FadeIn>
@@ -80,7 +80,7 @@ This booking request was submitted via the official website.`;
                         <div className="max-w-4xl mx-auto">
                             <form
                                 onSubmit={handleSubmit}
-                                className="grid md:grid-cols-2 gap-x-12 gap-y-8 p-10 md:p-20 rounded-[3rem] border border-white/5 bg-zinc-900/30 backdrop-blur-xl shadow-2xl"
+                                className="grid md:grid-cols-2 gap-x-12 gap-y-8 p-8 md:p-20 rounded-[2rem] md:rounded-[3rem] border border-white/5 bg-zinc-900/30 backdrop-blur-xl shadow-2xl"
                             >
                                 {/* Left Column: Client & Vehicle Info */}
                                 <div className="space-y-8">
@@ -184,13 +184,13 @@ This booking request was submitted via the official website.`;
                                 </div>
 
                                 {/* Form Action */}
-                                <div className="md:col-span-2 pt-10">
+                                <div className="md:col-span-2 pt-6 md:pt-10">
                                     <button
                                         type="submit"
-                                        className="w-full group relative bg-luxury-accent text-black py-8 rounded-full overflow-hidden transition-all duration-500 shadow-[0_20px_50px_rgba(0,255,65,0.2)] hover:shadow-[0_30px_70px_rgba(0,255,65,0.4)] hover:scale-[1.01]"
+                                        className="w-full group relative bg-luxury-accent text-black py-6 md:py-8 rounded-full overflow-hidden transition-all duration-500 shadow-[0_20px_50px_rgba(0,255,65,0.2)] hover:shadow-[0_30px_70px_rgba(0,255,65,0.4)] hover:scale-[1.01]"
                                     >
-                                        <div className="relative z-10 flex items-center justify-center gap-4">
-                                            <span className="text-black font-bold uppercase tracking-[0.4em] text-sm group-hover:tracking-[0.5em] transition-all">
+                                        <div className="relative z-10 flex items-center justify-center gap-3 md:gap-4">
+                                            <span className="text-black font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-[12px] md:text-sm group-hover:tracking-[0.5em] transition-all">
                                                 Book via WhatsApp
                                             </span>
                                             <svg className="w-6 h-6 fill-black" viewBox="0 0 24 24">

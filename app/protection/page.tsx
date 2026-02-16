@@ -22,8 +22,8 @@ export default function ProtectionPage() {
 
                 <div className="container-lux relative z-10 text-center">
                     <FadeIn direction="up">
-                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-8">Defensive Engineering</p>
-                        <h1 className="text-5xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[0.95] uppercase">
+                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-6 md:mb-8">Defensive Engineering</p>
+                        <h1 className="text-4xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[1.1] md:leading-[0.95] uppercase">
                             Permanent Protection.<br />
                             <span className="text-luxury-accent">Absolute</span> Preservation.
                         </h1>
@@ -39,8 +39,8 @@ export default function ProtectionPage() {
                 <div className="container-lux">
                     <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
                         <FadeIn direction="right">
-                            <p className="text-luxury-sm text-luxury-accent/60 uppercase tracking-[0.3em] font-medium mb-8">Molecular Shield</p>
-                            <h2 className="text-4xl md:text-6xl font-semibold text-white mb-8 tracking-tighter uppercase italic">Ceramic Coating</h2>
+                            <p className="text-luxury-sm text-luxury-accent/60 uppercase tracking-[0.3em] font-medium mb-6 md:mb-8">Molecular Shield</p>
+                            <h2 className="text-3xl md:text-6xl font-semibold text-white mb-8 tracking-tighter uppercase italic">Ceramic Coating</h2>
                             <p className="text-xl text-white/50 font-light mb-10 italic leading-relaxed">
                                 Ceramic coating forms a hardened nano-protection layer over your vehicle’s paint.
                                 This invisible barrier protects against UV damage, oxidation, chemicals, and environmental contamination.
@@ -79,9 +79,9 @@ export default function ProtectionPage() {
             <section className="py-24 md:py-32">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <div className="relative rounded-[3rem] overflow-hidden bg-white text-black p-10 md:p-24 shadow-[0_50px_100px_rgba(0,0,0,0.3)]">
-                            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                                <span className="text-[12rem] font-bold leading-none">PPF</span>
+                        <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden bg-white text-black p-8 md:p-24 shadow-[0_50px_100px_rgba(0,0,0,0.3)]">
+                            <div className="absolute top-0 right-0 p-8 md:p-12 opacity-5 pointer-events-none">
+                                <span className="text-[6rem] md:text-[12rem] font-bold leading-none">PPF</span>
                             </div>
                             <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
                                 <div>
@@ -89,8 +89,8 @@ export default function ProtectionPage() {
                                         <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
                                         <span className="text-[11px] uppercase tracking-[0.25em] font-bold text-black/60">Invisible Armor</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-6xl font-semibold text-black mb-8 tracking-tighter uppercase italic">Paint Protection Film</h2>
-                                    <p className="text-xl text-black/70 font-light mb-10 italic leading-relaxed">
+                                    <h2 className="text-3xl md:text-6xl font-semibold text-black mb-6 md:mb-8 tracking-tighter uppercase italic">Paint Protection Film</h2>
+                                    <p className="text-lg md:text-xl text-black/70 font-light mb-8 md:mb-10 italic leading-relaxed">
                                         Paint Protection Film (PPF) is a transparent, self-healing film that protects your vehicle
                                         against physical damage including stone chips, scratches, and abrasion.
                                     </p>
@@ -136,8 +136,8 @@ export default function ProtectionPage() {
 
                     <div className="grid md:grid-cols-2 gap-10">
                         <FadeIn direction="right">
-                            <div className="h-full p-10 md:p-16 rounded-[2rem] border border-white/5 bg-zinc-900/30 hover:border-white/20 transition-all duration-500">
-                                <h3 className="text-2xl font-semibold text-white mb-10 uppercase tracking-widest italic text-center">Ceramic Coating</h3>
+                            <div className="h-full p-8 md:p-16 rounded-[2rem] border border-white/5 bg-zinc-900/30 hover:border-white/20 transition-all duration-500">
+                                <h3 className="text-xl md:text-2xl font-semibold text-white mb-8 md:mb-10 uppercase tracking-widest italic text-center">Ceramic Coating</h3>
                                 <ul className="space-y-5">
                                     {[
                                         "Enhances gloss",
@@ -154,8 +154,8 @@ export default function ProtectionPage() {
                             </div>
                         </FadeIn>
                         <FadeIn direction="left">
-                            <div className="h-full p-10 md:p-16 rounded-[2rem] border border-white/5 bg-zinc-900/30 hover:border-white/20 transition-all duration-500">
-                                <h3 className="text-2xl font-semibold text-white mb-10 uppercase tracking-widest italic text-center">Paint Protection Film</h3>
+                            <div className="h-full p-8 md:p-16 rounded-[2rem] border border-white/5 bg-zinc-900/30 hover:border-white/20 transition-all duration-500">
+                                <h3 className="text-xl md:text-2xl font-semibold text-white mb-8 md:mb-10 uppercase tracking-widest italic text-center">Paint Protection Film</h3>
                                 <ul className="space-y-5">
                                     {[
                                         "Physical impact protection",
@@ -179,7 +179,7 @@ export default function ProtectionPage() {
             <section className="py-24 md:py-32">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <h2 className="text-4xl md:text-7xl font-semibold mb-20 text-center tracking-tighter uppercase italic">Our Protection Process</h2>
+                        <h2 className="text-4xl md:text-7xl font-semibold mb-12 md:mb-20 text-center tracking-tighter uppercase italic">Our Protection Process</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             <ProcessStep
                                 number="01"
@@ -210,10 +210,10 @@ export default function ProtectionPage() {
             <section className="py-32 relative overflow-hidden text-center border-t border-white/5">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <h2 className="text-4xl md:text-7xl font-semibold mb-10 tracking-tighter uppercase italic">
+                        <h2 className="text-4xl md:text-7xl font-semibold mb-8 md:mb-10 tracking-tighter uppercase italic">
                             Protect Your <span className="text-luxury-accent">Investment</span>
                         </h2>
-                        <p className="text-xl text-white/50 mb-16 max-w-2xl mx-auto font-light leading-relaxed italic">
+                        <p className="text-lg md:text-xl text-white/50 mb-12 md:mb-16 max-w-2xl mx-auto font-light leading-relaxed italic">
                             Professional-grade protection trusted by automotive enthusiasts.
                             Secure your vehicle's future with the world's most advanced defense systems.
                         </p>

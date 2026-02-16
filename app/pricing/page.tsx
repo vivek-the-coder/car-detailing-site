@@ -22,12 +22,12 @@ export default function PricingPage() {
 
                 <div className="container-lux relative z-10 text-center">
                     <FadeIn direction="up">
-                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-8">Investment & Value</p>
-                        <h1 className="text-5xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[0.95] uppercase">
+                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-6 md:mb-8">Investment & Value</p>
+                        <h1 className="text-4xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[1.1] md:leading-[0.95] uppercase">
                             Protection<br />
                             <span className="text-luxury-accent">Packages</span>
                         </h1>
-                        <p className="text-white/60 text-lg md:text-2xl max-w-3xl mx-auto font-light leading-relaxed italic">
+                        <p className="text-lg md:text-2xl text-white/60 max-w-3xl mx-auto font-light leading-relaxed italic">
                             Professional detailing and protection packages designed to restore, enhance, and preserve your vehicle.
                         </p>
                     </FadeIn>
@@ -84,13 +84,13 @@ export default function PricingPage() {
             <section className="py-24 md:py-32">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <div className="relative rounded-[3rem] overflow-hidden bg-white text-black p-12 md:p-24 shadow-[0_50px_100px_rgba(0,255,65,0.2)] text-center">
+                        <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden bg-white text-black p-8 md:p-24 shadow-[0_50px_100px_rgba(0,255,65,0.2)] text-center">
                             <div className="absolute inset-0 bg-gradient-to-br from-white via-luxury-accent/5 to-white pointer-events-none" />
 
                             <div className="relative z-10">
-                                <p className="text-[11px] uppercase tracking-[0.4em] font-bold text-black/40 mb-6 italic">Most Popular Choice</p>
-                                <h2 className="text-4xl md:text-7xl font-semibold text-black mb-6 tracking-tighter uppercase italic">Ceramic Protection</h2>
-                                <p className="text-3xl md:text-5xl font-bold mb-10 text-black tracking-tight">₹19,999 – ₹39,999</p>
+                                <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] font-bold text-black/40 mb-6 italic">Most Popular Choice</p>
+                                <h2 className="text-3xl md:text-7xl font-semibold text-black mb-6 tracking-tighter uppercase italic">Ceramic Protection</h2>
+                                <p className="text-2xl md:text-5xl font-bold mb-8 md:mb-10 text-black tracking-tight">₹19,999 – ₹39,999</p>
 
                                 <div className="max-w-xl mx-auto mb-16">
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
@@ -170,10 +170,10 @@ export default function PricingPage() {
             <section className="py-32 relative overflow-hidden text-center border-t border-white/5">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <h2 className="text-4xl md:text-7xl font-semibold mb-10 tracking-tighter uppercase italic">
+                        <h2 className="text-4xl md:text-7xl font-semibold mb-8 md:mb-10 tracking-tighter uppercase italic">
                             Protect Your <span className="text-luxury-accent">Masterpiece</span>
                         </h2>
-                        <p className="text-xl text-white/50 mb-16 max-w-2xl mx-auto font-light leading-relaxed italic">
+                        <p className="text-lg md:text-xl text-white/50 mb-12 md:mb-16 max-w-2xl mx-auto font-light leading-relaxed italic">
                             Choose the protection package best suited for your vehicle. Our experts are ready to guide you through the selection process.
                         </p>
                         <Link
@@ -206,9 +206,9 @@ function PricingCard({
     return (
         <FadeIn direction="up" delay={0.1}>
             <div
-                className={`p-10 rounded-[2.5rem] border transition-all duration-500 group h-full flex flex-col ${highlight
-                        ? "bg-white text-black border-white shadow-[0_30px_60px_rgba(255,255,255,0.1)] scale-105"
-                        : "border-white/5 bg-zinc-900/30 hover:border-white/20"
+                className={`p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-500 group h-full flex flex-col ${highlight
+                    ? "bg-white text-black border-white shadow-[0_30px_60px_rgba(255,255,255,0.1)] md:scale-105"
+                    : "border-white/5 bg-zinc-900/30 hover:border-white/20"
                     }`}
             >
                 <div className="mb-10">
@@ -232,8 +232,8 @@ function PricingCard({
                 <Link
                     href="/book"
                     className={`block text-center py-5 rounded-full text-[11px] font-bold uppercase tracking-[0.3em] transition-all ${highlight
-                            ? "bg-black text-white hover:bg-neutral-800"
-                            : "border border-white/20 text-white hover:bg-white hover:text-black hover:border-white"
+                        ? "bg-black text-white hover:bg-neutral-800"
+                        : "border border-white/20 text-white hover:bg-white hover:text-black hover:border-white"
                         }`}
                 >
                     Book Now

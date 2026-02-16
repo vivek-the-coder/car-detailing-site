@@ -8,8 +8,8 @@ export default function PortfolioPage() {
             <div className="container-lux">
                 <FadeIn direction="up">
                     <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.3em] font-medium mb-6">Gallery</p>
-                    <h1 className="text-5xl md:text-7xl font-semibold text-white mb-10 tracking-tight">
-                        Our <span className="italic">Work</span>
+                    <h1 className="text-4xl md:text-7xl font-semibold text-white mb-8 md:mb-10 tracking-tighter uppercase italic">
+                        Our <span className="text-luxury-accent">Work</span>
                     </h1>
                     <p className="text-luxury-body text-white/50 max-w-2xl mb-20">
                         Evidence of our commitment to perfection. Explore our portfolio of luxury, sports, and exotic vehicle transformations.

@@ -22,12 +22,12 @@ export default function ServicesPage() {
 
                 <div className="container-lux relative z-10 text-center">
                     <FadeIn direction="up">
-                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-8">Engineering Perfection</p>
-                        <h1 className="text-5xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[0.95] uppercase">
+                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-6 md:mb-8">Engineering Perfection</p>
+                        <h1 className="text-4xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[1.1] md:leading-[0.95] uppercase">
                             Precision Detailing.<br />
                             <span className="text-luxury-accent">Permanent</span> Protection.
                         </h1>
-                        <p className="text-white/60 text-lg md:text-2xl max-w-3xl mx-auto font-light leading-relaxed italic">
+                        <p className="text-lg md:text-2xl text-white/60 max-w-3xl mx-auto font-light leading-relaxed italic">
                             Every surface refined. Every detail perfected. Our professional detailing restores and protects your vehicle to its highest possible condition.
                         </p>
                     </FadeIn>

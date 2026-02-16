@@ -15,11 +15,11 @@ export default function ContactPage() {
 
                 <div className="container-lux relative z-10 text-center">
                     <FadeIn direction="up">
-                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-8">Concierge Service</p>
-                        <h1 className="text-5xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[0.95] uppercase italic">
+                        <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.4em] font-medium mb-6 md:mb-8">Concierge Service</p>
+                        <h1 className="text-4xl md:text-8xl font-semibold mb-8 tracking-tighter leading-[1.1] md:leading-[0.95] uppercase italic">
                             Contact <span className="text-luxury-accent">Aura</span> Detailing
                         </h1>
-                        <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed italic">
+                        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-light leading-relaxed italic">
                             Book your detailing service or get in touch with our specialists for a tailored consultation.
                         </p>
                     </FadeIn>
@@ -33,9 +33,9 @@ export default function ContactPage() {
 
                         {/* Information Column */}
                         <FadeIn direction="right">
-                            <div className="space-y-16">
+                            <div className="space-y-12 md:space-y-16">
                                 <div>
-                                    <h2 className="text-4xl font-semibold mb-10 tracking-tight uppercase italic">Studio Information</h2>
+                                    <h2 className="text-3xl md:text-4xl font-semibold mb-8 md:mb-10 tracking-tight uppercase italic">Studio Information</h2>
                                     <div className="grid sm:grid-cols-2 gap-10">
                                         <div className="space-y-8">
                                             <ContactInfoItem
@@ -82,8 +82,8 @@ export default function ContactPage() {
 
                         {/* Form Column */}
                         <FadeIn direction="left">
-                            <div className="p-10 md:p-16 rounded-[3rem] border border-white/5 bg-zinc-900/30">
-                                <h3 className="text-2xl font-semibold text-white mb-10 uppercase tracking-widest italic">Send a Message</h3>
+                            <div className="p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] border border-white/5 bg-zinc-900/30">
+                                <h3 className="text-xl md:text-2xl font-semibold text-white mb-8 md:mb-10 uppercase tracking-widest italic">Send a Message</h3>
                                 <form className="space-y-6">
                                     <div className="space-y-2">
                                         <label className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold ml-4">Identification</label>
@@ -142,9 +142,9 @@ export default function ContactPage() {
             <section className="py-24 md:py-32 bg-zinc-950/20">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <div className="text-center mb-16">
-                            <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.3em] font-medium mb-6">Navigation</p>
-                            <h2 className="text-4xl md:text-6xl font-semibold text-white tracking-tight uppercase italic">Visit Our Studio</h2>
+                        <div className="text-center mb-12 md:mb-16">
+                            <p className="text-luxury-sm text-luxury-accent uppercase tracking-[0.3em] font-medium mb-4 md:mb-6">Navigation</p>
+                            <h2 className="text-3xl md:text-6xl font-semibold text-white tracking-tight uppercase italic">Visit Our Studio</h2>
                         </div>
                         <div className="relative aspect-[16/9] w-full rounded-[3rem] overflow-hidden border border-white/10 bg-zinc-900 group">
                             {/* Placeholder for Google Maps - Add real embed here */}
@@ -166,17 +166,17 @@ export default function ContactPage() {
             <section className="py-32 relative overflow-hidden text-center border-t border-white/5">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <h2 className="text-4xl md:text-7xl font-semibold mb-10 tracking-tighter uppercase italic leading-tight">
+                        <h2 className="text-3xl md:text-7xl font-semibold mb-8 md:mb-10 tracking-tighter uppercase italic leading-tight">
                             Ready to Protect <br /> <span className="text-luxury-accent">Your Investment?</span>
                         </h2>
-                        <p className="text-xl text-white/50 mb-16 max-w-2xl mx-auto font-light leading-relaxed italic">
-                            Experience the standard of surgical detailing. Professional protection tailored to your vehicle's unique needs.
+                        <p className="text-lg md:text-xl text-white/50 mb-12 md:mb-16 max-w-2xl mx-auto font-light leading-relaxed italic">
+                            Experience the standard of surgical detailing. Professional protection tailored to your vehicle&apos;s unique needs.
                         </p>
                         <Link
                             href="/book"
-                            className="inline-block group relative bg-white border border-white px-16 py-6 rounded-full overflow-hidden transition-all duration-500"
+                            className="inline-block group relative bg-white border border-white px-12 py-5 md:px-16 md:py-6 rounded-full overflow-hidden transition-all duration-500"
                         >
-                            <span className="relative z-10 text-black font-bold uppercase tracking-[0.4em] text-sm group-hover:text-white">
+                            <span className="relative z-10 text-black font-bold uppercase tracking-[0.4em] text-[12px] md:text-sm group-hover:text-white">
                                 Book Now
                             </span>
                             <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
@@ -190,11 +190,11 @@ export default function ContactPage() {
 
 function ContactInfoItem({ label, value, subValue }: { label: string; value: string; subValue?: string }) {
     return (
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
             <p className="text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-bold">{label}</p>
             <div className="space-y-1">
-                <p className="text-xl text-white font-medium tracking-tight">{value}</p>
-                {subValue && <p className="text-white/40 font-light italic">{subValue}</p>}
+                <p className="text-lg md:text-xl text-white font-medium tracking-tight leading-none">{value}</p>
+                {subValue && <p className="text-sm md:text-base text-white/40 font-light italic">{subValue}</p>}
             </div>
         </div>
     );
