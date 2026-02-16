@@ -35,9 +35,9 @@ export default function ProtectionPage() {
             </section>
 
             {/* Ceramic Coating Section */}
-            <section className="py-32">
+            <section className="py-24 md:py-32">
                 <div className="container-lux">
-                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                    <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
                         <FadeIn direction="right">
                             <p className="text-luxury-sm text-luxury-accent/60 uppercase tracking-[0.3em] font-medium mb-8">Molecular Shield</p>
                             <h2 className="text-4xl md:text-6xl font-semibold text-white mb-8 tracking-tighter uppercase italic">Ceramic Coating</h2>
@@ -45,7 +45,7 @@ export default function ProtectionPage() {
                                 Ceramic coating forms a hardened nano-protection layer over your vehicle’s paint.
                                 This invisible barrier protects against UV damage, oxidation, chemicals, and environmental contamination.
                             </p>
-                            <ul className="space-y-5">
+                            <ul className="space-y-4">
                                 {[
                                     "Long-term protection (3–5 years)",
                                     "Hydrophobic water-repelling surface",
@@ -55,7 +55,7 @@ export default function ProtectionPage() {
                                 ].map((item, idx) => (
                                     <li key={idx} className="flex items-center gap-4 text-white/70 font-light text-lg">
                                         <div className="w-6 h-px bg-luxury-accent/30" />
-                                        {item}
+                                        • {item}
                                     </li>
                                 ))}
                             </ul>
@@ -75,23 +75,26 @@ export default function ProtectionPage() {
                 </div>
             </section>
 
-            {/* PPF Highlight Section (Visual Emphasis) */}
-            <section className="py-32">
+            {/* PPF Highlight Section (MASSIVE VISUAL EMPHASIS - LIGHT MODE CARD) */}
+            <section className="py-24 md:py-32">
                 <div className="container-lux">
                     <FadeIn direction="up">
-                        <div className="relative rounded-[3rem] overflow-hidden border border-luxury-accent/30 bg-zinc-900/40 p-10 md:p-24 shadow-[0_40px_100px_rgba(0,255,65,0.1)]">
-                            <div className="grid lg:grid-cols-2 gap-20 items-center">
-                                <div className="lg:order-2">
-                                    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-luxury-accent/30 bg-luxury-accent/5 mb-8">
-                                        <span className="w-2 h-2 rounded-full bg-luxury-accent animate-pulse shadow-[0_0_10px_#00ff41]" />
-                                        <span className="text-[11px] uppercase tracking-[0.25em] font-bold text-luxury-accent">Ultimate Defense</span>
+                        <div className="relative rounded-[3rem] overflow-hidden bg-white text-black p-10 md:p-24 shadow-[0_50px_100px_rgba(0,0,0,0.3)]">
+                            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                                <span className="text-[12rem] font-bold leading-none">PPF</span>
+                            </div>
+                            <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
+                                <div>
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/5 mb-8">
+                                        <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
+                                        <span className="text-[11px] uppercase tracking-[0.25em] font-bold text-black/60">Invisible Armor</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-6xl font-semibold text-white mb-8 tracking-tighter uppercase italic">Paint Protection Film</h2>
-                                    <p className="text-xl text-white/70 font-light mb-10 italic leading-relaxed">
+                                    <h2 className="text-4xl md:text-6xl font-semibold text-black mb-8 tracking-tighter uppercase italic">Paint Protection Film</h2>
+                                    <p className="text-xl text-black/70 font-light mb-10 italic leading-relaxed">
                                         Paint Protection Film (PPF) is a transparent, self-healing film that protects your vehicle
                                         against physical damage including stone chips, scratches, and abrasion.
                                     </p>
-                                    <ul className="space-y-4 mb-12">
+                                    <ul className="space-y-4">
                                         {[
                                             "Stone chip protection",
                                             "Scratch resistance",
@@ -99,21 +102,21 @@ export default function ProtectionPage() {
                                             "Preserves original factory paint",
                                             "Invisible protective layer"
                                         ].map((item, idx) => (
-                                            <li key={idx} className="flex items-center gap-4 text-white/60 font-light">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-luxury-accent" />
-                                                {item}
+                                            <li key={idx} className="flex items-center gap-4 text-black/60 font-medium text-lg">
+                                                <div className="w-6 h-px bg-black/20" />
+                                                • {item}
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="lg:order-1 relative aspect-[4/3] rounded-3xl overflow-hidden border border-white/5">
+                                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
                                     <Image
                                         src="/images/ppf.png"
                                         alt="PPF Protection"
                                         fill
                                         className="object-cover"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                 </div>
                             </div>
                         </div>
@@ -122,7 +125,7 @@ export default function ProtectionPage() {
             </section>
 
             {/* Comparison Section */}
-            <section className="py-32 bg-zinc-950/20">
+            <section className="py-24 md:py-32 bg-zinc-950/20">
                 <div className="container-lux">
                     <FadeIn direction="up">
                         <div className="text-center mb-20">
@@ -135,38 +138,34 @@ export default function ProtectionPage() {
                         <FadeIn direction="right">
                             <div className="h-full p-10 md:p-16 rounded-[2rem] border border-white/5 bg-zinc-900/30 hover:border-white/20 transition-all duration-500">
                                 <h3 className="text-2xl font-semibold text-white mb-10 uppercase tracking-widest italic text-center">Ceramic Coating</h3>
-                                <ul className="space-y-6">
+                                <ul className="space-y-5">
                                     {[
-                                        "Chemical Resistance: High",
-                                        "Gloss Enhancement: Extreme",
-                                        "Ease of Cleaning: Absolute",
-                                        "Self-Healing: No",
-                                        "Impact Protection: Minimal",
-                                        "Lifespan: 3-5 Years"
+                                        "Enhances gloss",
+                                        "Hydrophobic protection",
+                                        "UV resistance",
+                                        "Chemical resistance"
                                     ].map((li, i) => (
-                                        <li key={i} className="flex justify-between items-center text-white/50 border-b border-white/10 pb-4 last:border-0 font-light">
-                                            <span>{li.split(":")[0]}</span>
-                                            <span className="text-white font-medium">{li.split(":")[1]}</span>
+                                        <li key={i} className="flex items-center gap-4 text-white/50 border-b border-white/10 pb-4 last:border-0 font-light">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-luxury-accent/40" />
+                                            {li}
                                         </li>
                                     ))}
                                 </ul>
                             </div>
                         </FadeIn>
                         <FadeIn direction="left">
-                            <div className="h-full p-10 md:p-16 rounded-[2rem] border border-luxury-accent/20 bg-luxury-accent/5 hover:border-luxury-accent/50 transition-all duration-500">
-                                <h3 className="text-2xl font-semibold text-luxury-accent mb-10 uppercase tracking-widest italic text-center">Paint Protection Film</h3>
-                                <ul className="space-y-6">
+                            <div className="h-full p-10 md:p-16 rounded-[2rem] border border-white/5 bg-zinc-900/30 hover:border-white/20 transition-all duration-500">
+                                <h3 className="text-2xl font-semibold text-white mb-10 uppercase tracking-widest italic text-center">Paint Protection Film</h3>
+                                <ul className="space-y-5">
                                     {[
-                                        "Chemical Resistance: Extreme",
-                                        "Gloss Enhancement: High",
-                                        "Ease of Cleaning: High",
-                                        "Self-Healing: Yes (Heat Activated)",
-                                        "Impact Protection: Absolute",
-                                        "Lifespan: 7-10 Years"
+                                        "Physical impact protection",
+                                        "Scratch protection",
+                                        "Self-healing surface",
+                                        "Maximum preservation"
                                     ].map((li, i) => (
-                                        <li key={i} className="flex justify-between items-center text-white/50 border-b border-white/10 pb-4 last:border-0 font-light">
-                                            <span>{li.split(":")[0]}</span>
-                                            <span className="text-white font-medium">{li.split(":")[1]}</span>
+                                        <li key={i} className="flex items-center gap-4 text-white/50 border-b border-white/10 pb-4 last:border-0 font-light">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                                            {li}
                                         </li>
                                     ))}
                                 </ul>
@@ -177,30 +176,30 @@ export default function ProtectionPage() {
             </section>
 
             {/* Process Section */}
-            <section className="py-32">
+            <section className="py-24 md:py-32">
                 <div className="container-lux">
                     <FadeIn direction="up">
                         <h2 className="text-4xl md:text-7xl font-semibold mb-20 text-center tracking-tighter uppercase italic">Our Protection Process</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             <ProcessStep
                                 number="01"
                                 title="Surface Preparation"
-                                description="Comprehensive multi-stage decontamination wash followed by precision paint correction."
+                                description="Complete decontamination and paint correction."
                             />
                             <ProcessStep
                                 number="02"
                                 title="Application"
-                                description="Surgical application in a dust-controlled studio environment by certified technicians."
+                                description="Precision application of ceramic coating or PPF."
                             />
                             <ProcessStep
                                 number="03"
                                 title="Curing"
-                                description="Technological curing process under specific wavelength LED arrays for maximum molecular bonding."
+                                description="Controlled curing process for maximum durability."
                             />
                             <ProcessStep
                                 number="04"
                                 title="Final Inspection"
-                                description="Rigorous QC protocol under multi-spectrum lighting to ensure a flawless, glass-like result."
+                                description="Quality inspection to ensure flawless results."
                             />
                         </div>
                     </FadeIn>
