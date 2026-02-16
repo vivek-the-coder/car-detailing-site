@@ -75,122 +75,101 @@ export default function ScrollCanvas() {
     const rafId = useRef<number>(0);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const container = containerRef.current;
-        if (!canvas || !container) return;
+        const ctx = gsap.context(() => {
+            const canvas = canvasRef.current;
+            const container = containerRef.current;
+            if (!canvas || !container) return;
 
-        const context = canvas.getContext("2d");
-        if (!context) return;
+            const context = canvas.getContext("2d");
+            if (!context) return;
 
-        // --- 1. Setup & Mobile Optimization ---
-        const setCanvasSize = () => {
-            // Cap DPR at 1.5 for mobile performance standard
-            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            // --- 1. Setup & Mobile Optimization ---
+            const setCanvasSize = () => {
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                canvas.style.width = `${window.innerWidth}px`;
+                canvas.style.height = `${window.innerHeight}px`;
+                context.scale(dpr, dpr);
+            };
+            setCanvasSize();
 
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
+            let lastWidth = window.innerWidth;
+            const handleResize = () => {
+                if (window.innerWidth !== lastWidth) {
+                    lastWidth = window.innerWidth;
+                    setCanvasSize();
+                    render(Math.round(renderState.current.currentFrame));
+                }
+            };
+            window.addEventListener("resize", handleResize);
 
-            canvas.style.width = `${window.innerWidth}px`;
-            canvas.style.height = `${window.innerHeight}px`;
-
-            context.scale(dpr, dpr);
-        };
-        setCanvasSize();
-
-        // Handle resize (only redraw if width changes to prevent mobile address bar jump)
-        let lastWidth = window.innerWidth;
-        const handleResize = () => {
-            if (window.innerWidth !== lastWidth) {
-                lastWidth = window.innerWidth;
-                setCanvasSize();
-                render(Math.round(renderState.current.currentFrame));
-            }
-        };
-        window.addEventListener("resize", handleResize);
-
-        // --- 2. Image Preloading ---
-        if (images.current.length === 0) {
-            for (let i = 0; i < FRAME_COUNT; i++) {
-                const img = new Image();
-                img.src = `/frames/frame_${String(i + 1).padStart(4, "0")}.jpg`;
-                images.current.push(img);
-            }
-        }
-
-        // --- 3. Render Logic ---
-        const render = (index: number) => {
-            const img = images.current[index];
-            if (!img || !img.complete || img.naturalWidth === 0) return;
-
-            context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-            // Mobile-responsive scaling with optimized zoom
-            const isMobile = window.innerWidth < 768;
-
-            let scale;
-            if (isMobile) {
-                // On mobile: Start with "contain" then zoom by 1.25x for better framing
-                // This fills more of the screen while keeping the car visible
-                const containScale = Math.min(window.innerWidth / img.width, window.innerHeight / img.height);
-                scale = containScale * 1.25; // 25% zoom for perfect mobile balance
-            } else {
-                // Desktop: Full "cover" for immersive edge-to-edge experience
-                scale = Math.max(window.innerWidth / img.width, window.innerHeight / img.height);
-            }
-
-            const x = (window.innerWidth - img.width * scale) / 2;
-            const y = (window.innerHeight - img.height * scale) / 2;
-
-            context.drawImage(img, x, y, img.width * scale, img.height * scale);
-        };
-
-        // --- 4. Physics Loop (Decoupled from Scroll) ---
-        const animate = () => {
-            const state = renderState.current;
-            const diff = state.targetFrame - state.currentFrame;
-
-            // Smooth interpolation (0.08 factor as requested)
-            // This decouples scroll speed from frame render speed
-            if (Math.abs(diff) > 0.05) {
-                state.currentFrame += diff * 0.08;
-                const currentFrameInt = Math.round(state.currentFrame);
-                render(currentFrameInt);
-
-                // Update active scene based on EXACT FRAME NUMBER
-                const matchedScene = SCENES.find(scene => currentFrameInt >= scene.start && currentFrameInt <= scene.end);
-
-                if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
-                    lastSceneIdRef.current = matchedScene.id;
-                    setActiveScene(matchedScene);
+            // --- 2. Image Preloading ---
+            if (images.current.length === 0) {
+                for (let i = 0; i < FRAME_COUNT; i++) {
+                    const img = new Image();
+                    img.src = `/frames/frame_${String(i + 1).padStart(4, "0")}.jpg`;
+                    images.current.push(img);
                 }
             }
 
-            rafId.current = requestAnimationFrame(animate);
-        };
-        animate();
+            // --- 3. Render Logic ---
+            const render = (index: number) => {
+                const img = images.current[index];
+                if (!img || !img.complete || img.naturalWidth === 0) return;
+                context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                const isMobile = window.innerWidth < 768;
+                let scale;
+                if (isMobile) {
+                    const containScale = Math.min(window.innerWidth / img.width, window.innerHeight / img.height);
+                    scale = containScale * 1.25;
+                } else {
+                    scale = Math.max(window.innerWidth / img.width, window.innerHeight / img.height);
+                }
+                const x = (window.innerWidth - img.width * scale) / 2;
+                const y = (window.innerHeight - img.height * scale) / 2;
+                context.drawImage(img, x, y, img.width * scale, img.height * scale);
+            };
 
-        // --- 5. ScrollTrigger (The Locking Mechanism) ---
-        const trigger = ScrollTrigger.create({
-            trigger: container,
-            start: "top top",
-            // This controls the scroll "length". +=4000px gives a nice cinematic pace.
-            // Adjust this number to change total scroll distance.
-            end: "+=4000",
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-            onUpdate: (self) => {
-                // Map scroll progress (0-1) to total frames
-                renderState.current.targetFrame = self.progress * (FRAME_COUNT - 1);
-            }
-        });
+            // --- 4. Physics Loop ---
+            const animate = () => {
+                const state = renderState.current;
+                const diff = state.targetFrame - state.currentFrame;
+                if (Math.abs(diff) > 0.05) {
+                    state.currentFrame += diff * 0.08;
+                    const currentFrameInt = Math.round(state.currentFrame);
+                    render(currentFrameInt);
+                    const matchedScene = SCENES.find(scene => currentFrameInt >= scene.start && currentFrameInt <= scene.end);
+                    if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
+                        lastSceneIdRef.current = matchedScene.id;
+                        setActiveScene(matchedScene);
+                    }
+                }
+                rafId.current = requestAnimationFrame(animate);
+            };
+            animate();
 
-        return () => {
-            window.removeEventListener("resize", handleResize);
-            cancelAnimationFrame(rafId.current);
-            trigger.kill();
-        };
+            // --- 5. ScrollTrigger (The Locking Mechanism) ---
+            ScrollTrigger.create({
+                trigger: container,
+                start: "top top",
+                end: "+=4000",
+                pin: true,
+                scrub: true,
+                anticipatePin: 1,
+                onUpdate: (self) => {
+                    renderState.current.targetFrame = self.progress * (FRAME_COUNT - 1);
+                }
+            });
 
+            // Cleanup handler inside context
+            return () => {
+                window.removeEventListener("resize", handleResize);
+                cancelAnimationFrame(rafId.current);
+            };
+        }, containerRef);
+
+        return () => ctx.revert(); // Reverts all GSAP changes (including pinning)
     }, []);
 
     return (
