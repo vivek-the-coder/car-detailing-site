@@ -13,7 +13,7 @@ import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
-import { preloadAllFrames } from "@/lib/preloadFrames";
+import { preloadInitialFrames } from "@/lib/preloadFrames";
 import { frameStore } from "@/lib/frameStore";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -23,14 +23,15 @@ export default function Home() {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
-    // 1. Minimum duration for brand impact
+    // 1. Minimum duration for brand impact (Reduced for better UX)
     const timer = setTimeout(() => {
       setMinTimeElapsed(true);
-    }, 2500);
+    }, 1200);
 
-    // 2. Full frame preloading (336 frames)
-    preloadAllFrames({
-      totalFrames: 336,
+    // 2. Priority Scene Preloading (Full First Scene - 63 frames)
+    const initialFrames = 63;
+    preloadInitialFrames({
+      initialFrames,
       onProgress: setProgress,
     }).then((bitmaps) => {
       frameStore.bitmaps = bitmaps;

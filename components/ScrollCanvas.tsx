@@ -77,6 +77,42 @@ export default function ScrollCanvas() {
     });
     const rafId = useRef<number>(0);
 
+    // Background loading for remaining frames
+    useEffect(() => {
+        const initialFrames = 63;
+        const totalFrames = FRAME_COUNT;
+
+        // Load the rest of the frames in the background
+        const loadRemaining = async () => {
+            const batchSize = 10;
+            for (let i = initialFrames + 1; i <= totalFrames; i += batchSize) {
+                const batch = [];
+                for (let j = i; j < i + batchSize && j <= totalFrames; j++) {
+                    const url = `/frames/frame_${String(j).padStart(4, "0")}.jpg`;
+                    batch.push(
+                        (async (index) => {
+                            if (frameStore.bitmaps[index]) return; // Skip if already loaded
+                            try {
+                                const response = await fetch(url, { cache: "force-cache" });
+                                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                                const blob = await response.blob();
+                                const bitmap = await createImageBitmap(blob);
+                                frameStore.bitmaps[index] = bitmap;
+                            } catch (e) {
+                                console.error(`Background preload failed for frame ${index}`, e);
+                            }
+                        })(j)
+                    );
+                }
+                await Promise.all(batch);
+                // We add a tiny delay between batches to ensure the UI thread stays butter-smooth
+                await new Promise(r => setTimeout(r, 50));
+            }
+        };
+
+        loadRemaining();
+    }, []);
+
     useEffect(() => {
         const ctx = gsap.context(() => {
             if (!canvasRef.current) return;

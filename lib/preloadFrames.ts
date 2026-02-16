@@ -1,18 +1,17 @@
-export async function preloadAllFrames({
-    totalFrames,
+export async function preloadInitialFrames({
+    initialFrames,
     onProgress,
 }: {
-    totalFrames: number;
+    initialFrames: number;
     onProgress: (progress: number) => void;
 }): Promise<(ImageBitmap | null)[]> {
-    const bitmaps: (ImageBitmap | null)[] = new Array(totalFrames + 1).fill(null);
+    const bitmaps: (ImageBitmap | null)[] = new Array(337).fill(null);
 
-    // We use a small concurrency limit to prevent network congestion while allowing parallel downloads
     const batchSize = 10;
 
-    for (let i = 1; i <= totalFrames; i += batchSize) {
+    for (let i = 1; i <= initialFrames; i += batchSize) {
         const batch = [];
-        for (let j = i; j < i + batchSize && j <= totalFrames; j++) {
+        for (let j = i; j < i + batchSize && j <= initialFrames; j++) {
             const url = `/frames/frame_${String(j).padStart(4, "0")}.jpg`;
             batch.push(
                 (async (index) => {
@@ -23,14 +22,14 @@ export async function preloadAllFrames({
                         const bitmap = await createImageBitmap(blob);
                         bitmaps[index] = bitmap;
                     } catch (error) {
-                        console.error(`Error preloading frame ${index}:`, error);
+                        console.error(`Error preloading initial frame ${index}:`, error);
                     }
                 })(j)
             );
         }
 
         await Promise.all(batch);
-        onProgress((Math.min(i + batchSize - 1, totalFrames) / totalFrames) * 100);
+        onProgress((Math.min(i + batchSize - 1, initialFrames) / initialFrames) * 100);
     }
 
     return bitmaps;
