@@ -87,10 +87,14 @@ export default function ScrollCanvas() {
             const concurrency = 4;
             const queue: Promise<void>[] = [];
 
+            // Detect mobile viewport (Client-side, so window is safe)
+            const isMobile = window.innerWidth < 768;
+            const pathPrefix = isMobile ? '/frames/mobile' : '/frames/desktop';
+
             const loadFrame = async (i: number) => {
                 if (frameStore.bitmaps[i]) return; // Skip if already loaded
 
-                const url = `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
+                const url = `${pathPrefix}/frame_${String(i).padStart(4, "0")}.webp`;
                 try {
                     const response = await fetch(url, { cache: "force-cache" });
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
