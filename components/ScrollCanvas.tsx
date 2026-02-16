@@ -82,31 +82,41 @@ export default function ScrollCanvas() {
         const initialFrames = 63;
         const totalFrames = FRAME_COUNT;
 
-        // Load the rest of the frames in the background
+        // Concurrent Background Loader
         const loadRemaining = async () => {
-            const batchSize = 10;
-            for (let i = initialFrames + 1; i <= totalFrames; i += batchSize) {
-                const batch = [];
-                for (let j = i; j < i + batchSize && j <= totalFrames; j++) {
-                    const url = `/frames/frame_${String(j).padStart(4, "0")}.jpg`;
-                    batch.push(
-                        (async (index) => {
-                            if (frameStore.bitmaps[index]) return; // Skip if already loaded
-                            try {
-                                const response = await fetch(url, { cache: "force-cache" });
-                                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                                const blob = await response.blob();
-                                const bitmap = await createImageBitmap(blob);
-                                frameStore.bitmaps[index] = bitmap;
-                            } catch (e) {
-                                console.error(`Background preload failed for frame ${index}`, e);
-                            }
-                        })(j)
-                    );
+            const concurrency = 4;
+            const queue: Promise<void>[] = [];
+
+            const loadFrame = async (i: number) => {
+                if (frameStore.bitmaps[i]) return; // Skip if already loaded
+
+                const url = `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
+                try {
+                    const response = await fetch(url, { cache: "force-cache" });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const blob = await response.blob();
+                    const bitmap = await createImageBitmap(blob);
+                    frameStore.bitmaps[i] = bitmap;
+                } catch (e) {
+                    console.error(`Background preload failed for frame ${i}`, e);
                 }
-                await Promise.all(batch);
-                // We add a tiny delay between batches to ensure the UI thread stays butter-smooth
-                await new Promise(r => setTimeout(r, 50));
+            };
+
+
+            for (let i = initialFrames + 1; i <= totalFrames; i++) {
+                queue.push(loadFrame(i));
+
+                if (queue.length === concurrency) {
+                    await Promise.all(queue);
+                    queue.length = 0;
+                    // minimal yield to keep main thread breathing
+                    await new Promise(r => setTimeout(r, 10));
+                }
+            }
+
+            // Clean up any stragglers
+            if (queue.length > 0) {
+                await Promise.all(queue);
             }
         };
 
