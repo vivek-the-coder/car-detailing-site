@@ -7,6 +7,13 @@ export default function BeforeAfter() {
     const [position, setPosition] = useState(50);
     const [isResizing, setIsResizing] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [containerWidth, setContainerWidth] = useState<number | string>("100%");
+
+    const updateWidth = () => {
+        if (containerRef.current) {
+            setContainerWidth(containerRef.current.offsetWidth);
+        }
+    };
 
     const handleMove = (x: number) => {
         const rect = containerRef.current?.getBoundingClientRect();
@@ -29,8 +36,13 @@ export default function BeforeAfter() {
     const onMouseUp = () => setIsResizing(false);
 
     useEffect(() => {
+        updateWidth();
         window.addEventListener("mouseup", onMouseUp);
-        return () => window.removeEventListener("mouseup", onMouseUp);
+        window.addEventListener("resize", updateWidth);
+        return () => {
+            window.removeEventListener("mouseup", onMouseUp);
+            window.removeEventListener("resize", updateWidth);
+        };
     }, []);
 
     return (
@@ -77,7 +89,7 @@ export default function BeforeAfter() {
                                 src="/images/1000250563.jpg"
                                 alt="Before Detail"
                                 className="w-[100vw] max-w-none h-full object-cover grayscale brightness-75 contrast-75 saturate-50 opacity-80"
-                                style={{ width: containerRef.current?.offsetWidth }}
+                                style={{ width: containerWidth }}
                             />
                             <div className="absolute top-10 left-10">
                                 <span className="px-6 py-2.5 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl text-[14px] font-bold uppercase tracking-[0.25em] text-white/70">
