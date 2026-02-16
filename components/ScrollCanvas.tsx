@@ -157,13 +157,15 @@ export default function ScrollCanvas() {
             };
             rafId.current = requestAnimationFrame(animate);
 
-            // Robust PINNING
+            // Robust PINNING & LOCK
             ScrollTrigger.create({
                 trigger: sectionRef.current,
                 start: "top top",
-                end: "+=5000", // Increased scroll length for more cinematic feel
-                pin: pinRef.current,
-                scrub: 1, // Smoother scrubbing
+                end: "+=5000",
+                pin: true,
+                pinSpacing: true,
+                scrub: 1,
+                anticipatePin: 1,
                 onUpdate: (self) => {
                     renderState.current.targetFrame = self.progress * (FRAME_COUNT - 1);
                 }
@@ -177,9 +179,8 @@ export default function ScrollCanvas() {
 
         return () => {
             ctx.revert();
-            ScrollTrigger.getAll().forEach(t => {
-                if (t.trigger === sectionRef.current) t.kill(true);
-            });
+            // Full Cleanup
+            ScrollTrigger.getAll().forEach(t => t.kill());
         };
     }, []);
 
