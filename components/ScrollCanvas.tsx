@@ -93,9 +93,9 @@ export default function ScrollCanvas() {
                 const dpr = Math.min(window.devicePixelRatio || 1, 2);
                 const isMobile = window.innerWidth < 768;
 
-                // Optimized scaling math: 'contain' for mobile, 'cover' for desktop
+                // Optimized scaling math: 'contain' for mobile (+ subtle zoom), 'cover' for desktop
                 const scale = isMobile
-                    ? Math.min(canvas.width / img.width, canvas.height / img.height)
+                    ? Math.min(canvas.width / img.width, canvas.height / img.height) * 1.5
                     : Math.max(canvas.width / img.width, canvas.height / img.height);
 
                 const x = (canvas.width - img.width * scale) / 2;
