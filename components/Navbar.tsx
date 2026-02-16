@@ -24,6 +24,17 @@ export default function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
+  // Helper to ensure clean transitions
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (window.location.pathname === href) {
+      e.preventDefault();
+      setIsOpen(false);
+      return;
+    }
+    // Simple state reset
+    setIsOpen(false);
+  };
+
   return (
     <nav
       className={clsx(
@@ -36,7 +47,7 @@ export default function Navbar() {
     >
       <div className="w-full px-6 md:px-12 flex items-center justify-between mx-auto max-w-[1800px]">
         {/* Left Aligned Logo - Precise Sizing */}
-        <Link href="/" className={clsx(
+        <Link href="/" onClick={(e) => handleNavClick(e, "/")} className={clsx(
           "relative transition-all duration-500",
           scrolled ? "h-6 w-24 md:h-8 md:w-32" : "h-7 w-28 md:h-10 md:w-40"
         )}>
@@ -55,6 +66,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="text-[11px] uppercase tracking-[0.25em] font-bold text-white/50 hover:text-luxury-accent transition-colors duration-300"
             >
               {link.name}
@@ -65,6 +77,7 @@ export default function Navbar() {
         <div className="flex items-center gap-8">
           <Link
             href="/book"
+            onClick={(e) => handleNavClick(e, "/book")}
             className="hidden lg:block group relative overflow-hidden rounded-full border border-white/10 px-10 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-all duration-500 hover:border-white/30"
           >
             <span className="relative z-10">Book Now</span>
@@ -74,7 +87,7 @@ export default function Navbar() {
           {/* Premium 2-Bar Hamburger */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="w-10 h-10 flex flex-col items-end justify-center gap-2 relative z-50 group"
+            className="w-10 h-10 flex flex-col items-end justify-center gap-2 relative z-50 group xl:hidden"
             aria-label="Toggle Menu"
           >
             <div className={clsx(
@@ -93,11 +106,11 @@ export default function Navbar() {
       {isOpen && (
         <div className="fixed inset-0 z-40 bg-[#030303]/98 backdrop-blur-3xl px-8 pt-32 pb-12 flex flex-col md:hidden">
           <div className="flex flex-col gap-10">
-            {navLinks.map((link, index) => (
+            {navLinks.map((link) => (
               <div key={link.name}>
                 <Link
                   href={link.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={(e) => handleNavClick(e, link.href)}
                   className="text-5xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic"
                 >
                   {link.name}
@@ -109,7 +122,7 @@ export default function Navbar() {
           <div className="mt-auto">
             <Link
               href="/book"
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => handleNavClick(e, "/book")}
               className="w-full py-7 block text-center rounded-full border border-white/10 bg-white/5 text-white font-bold uppercase tracking-[0.3em] text-[11px]"
             >
               Book Now

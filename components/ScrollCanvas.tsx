@@ -12,7 +12,7 @@ const FRAME_COUNT = 336;
 const SCENES = [
     {
         id: 0,
-        start: 0, // Adjusted to 0 for safety
+        start: 0,
         end: 62,
         tag: "ORIGIN",
         title: "Where perfection enters the light",
@@ -61,8 +61,9 @@ const SCENES = [
 ];
 
 export default function ScrollCanvas() {
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const pinRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
     const [activeScene, setActiveScene] = useState(SCENES[0]);
     const lastSceneIdRef = useRef<number>(-1);
 
@@ -76,14 +77,11 @@ export default function ScrollCanvas() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
+            if (!canvasRef.current || !pinRef.current) return;
             const canvas = canvasRef.current;
-            const container = containerRef.current;
-            if (!canvas || !container) return;
-
             const context = canvas.getContext("2d");
             if (!context) return;
 
-            // --- 1. Setup & Mobile Optimization ---
             const setCanvasSize = () => {
                 const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
                 canvas.width = window.innerWidth * dpr;
@@ -94,17 +92,12 @@ export default function ScrollCanvas() {
             };
             setCanvasSize();
 
-            let lastWidth = window.innerWidth;
             const handleResize = () => {
-                if (window.innerWidth !== lastWidth) {
-                    lastWidth = window.innerWidth;
-                    setCanvasSize();
-                    render(Math.round(renderState.current.currentFrame));
-                }
+                setCanvasSize();
+                render(Math.round(renderState.current.currentFrame));
             };
             window.addEventListener("resize", handleResize);
 
-            // --- 2. Image Preloading ---
             if (images.current.length === 0) {
                 for (let i = 0; i < FRAME_COUNT; i++) {
                     const img = new Image();
@@ -113,25 +106,19 @@ export default function ScrollCanvas() {
                 }
             }
 
-            // --- 3. Render Logic ---
             const render = (index: number) => {
                 const img = images.current[index];
                 if (!img || !img.complete || img.naturalWidth === 0) return;
                 context.clearRect(0, 0, window.innerWidth, window.innerHeight);
                 const isMobile = window.innerWidth < 768;
-                let scale;
-                if (isMobile) {
-                    const containScale = Math.min(window.innerWidth / img.width, window.innerHeight / img.height);
-                    scale = containScale * 1.25;
-                } else {
-                    scale = Math.max(window.innerWidth / img.width, window.innerHeight / img.height);
-                }
+                const scale = isMobile
+                    ? Math.min(window.innerWidth / img.width, window.innerHeight / img.height) * 1.25
+                    : Math.max(window.innerWidth / img.width, window.innerHeight / img.height);
                 const x = (window.innerWidth - img.width * scale) / 2;
                 const y = (window.innerHeight - img.height * scale) / 2;
                 context.drawImage(img, x, y, img.width * scale, img.height * scale);
             };
 
-            // --- 4. Physics Loop ---
             const animate = () => {
                 const state = renderState.current;
                 const diff = state.targetFrame - state.currentFrame;
@@ -149,9 +136,9 @@ export default function ScrollCanvas() {
             };
             animate();
 
-            // --- 5. ScrollTrigger (The Locking Mechanism) ---
+            // PINNING THE INNER TARGET
             ScrollTrigger.create({
-                trigger: container,
+                trigger: pinRef.current,
                 start: "top top",
                 end: "+=4000",
                 pin: true,
@@ -162,46 +149,48 @@ export default function ScrollCanvas() {
                 }
             });
 
-            // Cleanup handler inside context
             return () => {
                 window.removeEventListener("resize", handleResize);
                 cancelAnimationFrame(rafId.current);
             };
-        }, containerRef);
+        }, sectionRef);
 
-        return () => ctx.revert(); // Reverts all GSAP changes (including pinning)
+        return () => {
+            ctx.revert();
+            // Fail-safe: ensure all triggers for this section are absolutely dead
+            ScrollTrigger.getAll().forEach(t => t.kill(true));
+        };
     }, []);
 
     return (
-        // Wrapper is pinned by ScrollTrigger, maintaining viewport lock while scrolling
-        <section
-            ref={containerRef}
-            className="h-[100dvh] w-full bg-black relative overflow-hidden"
-        >
-            {/* Cinematic Overlay Text (Mobile Only) */}
-            <div className="md:hidden absolute inset-0 z-20 pointer-events-none flex flex-col justify-between py-16 px-6">
-                {/* Top Text Area */}
-                <div key={activeScene?.id + "-top"} className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 animate-in fade-in slide-in-from-bottom-2">
-                    <p className="text-luxury-accent text-xs tracking-[0.35em] font-medium mb-3">
-                        {activeScene?.tag}
-                    </p>
-                    <h2 className="text-white text-2xl font-semibold leading-tight max-w-[80%]">
-                        {activeScene?.title}
-                    </h2>
+        <section ref={sectionRef} className="bg-black relative">
+            <div
+                ref={pinRef}
+                className="h-[100dvh] w-full bg-black relative overflow-hidden"
+            >
+                {/* Cinematic Overlay Text (Mobile Only) */}
+                <div className="md:hidden absolute inset-0 z-20 pointer-events-none flex flex-col justify-between py-16 px-6">
+                    <div key={activeScene?.id + "-top"} className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 animate-in fade-in slide-in-from-bottom-2">
+                        <p className="text-luxury-accent text-xs tracking-[0.35em] font-medium mb-3">
+                            {activeScene?.tag}
+                        </p>
+                        <h2 className="text-white text-2xl font-semibold leading-tight max-w-[80%]">
+                            {activeScene?.title}
+                        </h2>
+                    </div>
+
+                    <div key={activeScene?.id + "-bottom"} className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 animate-in fade-in slide-in-from-bottom-2">
+                        <p className="text-white/60 text-sm max-w-[90%] leading-relaxed">
+                            {activeScene?.desc}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Bottom Text Area */}
-                <div key={activeScene?.id + "-bottom"} className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 animate-in fade-in slide-in-from-bottom-2">
-                    <p className="text-white/60 text-sm max-w-[90%] leading-relaxed">
-                        {activeScene?.desc}
-                    </p>
-                </div>
+                <canvas
+                    ref={canvasRef}
+                    className="block w-full h-full object-cover"
+                />
             </div>
-
-            <canvas
-                ref={canvasRef}
-                className="block w-full h-full object-cover"
-            />
         </section>
     );
 }
