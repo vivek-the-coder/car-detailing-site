@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { clsx } from "clsx";
 
+import { AnimatePresence, motion } from "framer-motion";
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +17,14 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isOpen]);
+
   const navLinks = [
     { name: "Services", href: "/services" },
     { name: "Protection", href: "/protection" },
@@ -24,14 +34,12 @@ export default function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
-  // Helper to ensure clean transitions
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (window.location.pathname === href) {
       e.preventDefault();
       setIsOpen(false);
       return;
     }
-    // Simple state reset
     setIsOpen(false);
   };
 
@@ -39,16 +47,15 @@ export default function Navbar() {
     <nav
       className={clsx(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b flex items-center",
-        // Mobile-first height optimization: 64px on mobile, transitions to 112px on desktop only when at top
         isOpen || scrolled
           ? "h-16 md:h-24 bg-black/60 backdrop-blur-xl border-white/5"
           : "h-16 md:h-28 bg-transparent border-transparent"
       )}
     >
       <div className="w-full px-6 md:px-12 flex items-center justify-between mx-auto max-w-[1800px]">
-        {/* Left Aligned Logo - Precise Sizing */}
+        {/* Left Aligned Logo */}
         <Link href="/" onClick={(e) => handleNavClick(e, "/")} className={clsx(
-          "relative transition-all duration-500",
+          "relative transition-all duration-500 z-50",
           scrolled ? "h-6 w-24 md:h-8 md:w-32" : "h-7 w-28 md:h-10 md:w-40"
         )}>
           <Image
@@ -60,7 +67,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Center Navigation - Premium Spacing */}
+        {/* Center Navigation */}
         <div className="hidden xl:flex items-center gap-12 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <Link
@@ -102,34 +109,55 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay - Full Screen Cinematic */}
-      {isOpen && (
-        <div className="fixed inset-0 z-40 bg-[#030303]/98 backdrop-blur-3xl px-8 pt-32 pb-12 flex flex-col xl:hidden">
-          <div className="flex flex-col gap-8 md:gap-10 container-lux">
-            {navLinks.map((link) => (
-              <div key={link.name}>
-                <Link
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-4xl md:text-6xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic uppercase leading-none"
-                >
-                  {link.name}
-                </Link>
-              </div>
-            ))}
-          </div>
+      {/* Mobile Menu Overlay - Metal Blur Cinematic */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-40 metal-blur px-8 pt-32 pb-12 flex flex-col xl:hidden"
+          >
+            {/* Texture Layer */}
+            <div className="absolute inset-0 noise-texture opacity-[0.03] pointer-events-none" />
 
-          <div className="mt-auto container-lux">
-            <Link
-              href="/book"
-              onClick={(e) => handleNavClick(e, "/book")}
-              className="w-full py-6 md:py-8 block text-center rounded-full border border-[#00ff41]/20 bg-[#00ff41]/5 text-[#00ff41] font-bold uppercase tracking-[0.3em] text-[10px] md:text-[12px] hover:bg-[#00ff41] hover:text-black transition-all"
+            <div className="flex flex-col gap-6 md:gap-10 container-lux relative z-10">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + (i * 0.05), duration: 0.5 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                    className="text-4xl md:text-7xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic uppercase leading-none block py-2"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-auto container-lux relative z-10"
             >
-              Book Reservation
-            </Link>
-          </div>
-        </div>
-      )}
+              <Link
+                href="/book"
+                onClick={(e) => handleNavClick(e, "/book")}
+                className="w-full py-6 md:py-8 block text-center rounded-full border border-luxury-accent/20 bg-luxury-accent/5 text-luxury-accent font-bold uppercase tracking-[0.3em] text-[11px] md:text-[13px] hover:bg-luxury-accent hover:text-black transition-all shadow-[0_0_30px_rgba(0,255,65,0.1)] active:scale-95"
+              >
+                Book Reservation
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
