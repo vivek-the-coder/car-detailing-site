@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-const FRAME_COUNT = 336;
+const FRAME_COUNT = 337;
 
 export default function ScrollCanvas() {
     const sectionRef = useRef<HTMLDivElement>(null);
@@ -25,8 +25,8 @@ export default function ScrollCanvas() {
 
     // Physics-based scrolling state refs
     const renderState = useRef({
-        currentFrame: 0,
-        targetFrame: 0
+        currentFrame: 1, // Start at 1 for 1-based indexing
+        targetFrame: 1
     });
     const rafId = useRef<number>(0);
 
@@ -91,39 +91,46 @@ export default function ScrollCanvas() {
             window.addEventListener("resize", handleResize);
 
             // Initial frame render
-            render(0);
+            render(1);
 
             const animate = () => {
                 const state = renderState.current;
                 const diff = state.targetFrame - state.currentFrame;
 
-                // Allow very small movements and always allow frame 0
-                if (Math.abs(diff) > 0.001 || state.currentFrame === 0) {
+                // Allow very small movements and always ensure proper frame bound
+                if (Math.abs(diff) > 0.001 || state.currentFrame < 1) {
                     state.currentFrame += diff * 0.1; // Slightly faster tracking
-                    const currentFrameInt = Math.round(state.currentFrame);
+                    // Clamp to valid range [1, FRAME_COUNT]
+                    const currentFrameInt = Math.max(1, Math.min(FRAME_COUNT, Math.round(state.currentFrame)));
 
-                    if (currentFrameInt >= 0 && currentFrameInt < FRAME_COUNT) {
-                        render(currentFrameInt);
+                    if (currentFrameInt >= 1 && currentFrameInt <= FRAME_COUNT) {
+                        try {
+                            render(currentFrameInt);
+                        } catch (e) {
+                            // Silent fail on render error
+                        }
 
                         // Scene Logic
                         const matchedSceneIndex = getScene(currentFrameInt);
-                        const matchedScene = SCENES[matchedSceneIndex];
+                        // Only update if scene found
+                        if (matchedSceneIndex !== -1) {
+                            const matchedScene = SCENES[matchedSceneIndex];
+                            if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
+                                lastSceneIdRef.current = matchedScene.id;
+                                setActiveScene(matchedScene);
+                            }
 
-                        if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
-                            lastSceneIdRef.current = matchedScene.id;
-                            setActiveScene(matchedScene);
-                        }
+                            // Predictive Preload Logic
+                            if (!loadedScenes.current.has(matchedSceneIndex)) {
+                                // Mark current scene as fully "visited/active" so we don't trigger again
+                                loadedScenes.current.add(matchedSceneIndex);
 
-                        // Predictive Preload Logic
-                        if (matchedSceneIndex !== -1 && !loadedScenes.current.has(matchedSceneIndex)) {
-                            // Mark current scene as fully "visited/active" so we don't trigger again
-                            loadedScenes.current.add(matchedSceneIndex);
-
-                            // Preload next 2 scenes
-                            // e.g. if current is 1, load 2 and 3.
-                            const nextScenes = [matchedSceneIndex + 1, matchedSceneIndex + 2];
-                            // Filter valid scenes only (handled in loader)
-                            frameQueue.preloadScenes(nextScenes);
+                                // Preload next 2 scenes
+                                // e.g. if current is 1, load 2 and 3.
+                                const nextScenes = [matchedSceneIndex + 1, matchedSceneIndex + 2];
+                                // Filter valid scenes only (handled in loader)
+                                frameQueue.preloadScenes(nextScenes);
+                            }
                         }
                     }
                 }
@@ -141,7 +148,10 @@ export default function ScrollCanvas() {
                 scrub: 1,
                 anticipatePin: 1,
                 onUpdate: (self) => {
-                    renderState.current.targetFrame = self.progress * (FRAME_COUNT - 1);
+                    // Map progress 0-1 to frames 1-FRAME_COUNT
+                    // e.g. 0 -> 1. 1 -> 337.
+                    const progress = Math.max(0, Math.min(1, self.progress));
+                    renderState.current.targetFrame = 1 + (progress * (FRAME_COUNT - 1));
                 }
             });
 
