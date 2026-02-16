@@ -85,7 +85,8 @@ export default function ScrollCanvas() {
         // Concurrent Background Loader
         const loadRemaining = async () => {
             const concurrency = 4;
-            const queue: Promise<void>[] = [];
+            const executing: Promise<void>[] = [];
+            const allPromises: Promise<void>[] = [];
 
             const loadFrame = async (i: number) => {
                 if (frameStore.bitmaps[i]) return; // Skip if already loaded
@@ -104,20 +105,20 @@ export default function ScrollCanvas() {
 
 
             for (let i = initialFrames + 1; i <= totalFrames; i++) {
-                queue.push(loadFrame(i));
+                const p = loadFrame(i);
+                allPromises.push(p);
 
-                if (queue.length === concurrency) {
-                    await Promise.all(queue);
-                    queue.length = 0;
-                    // minimal yield to keep main thread breathing
-                    await new Promise(r => setTimeout(r, 10));
+                const e: Promise<void> = p.then(() => {
+                    executing.splice(executing.indexOf(e), 1);
+                });
+                executing.push(e);
+
+                if (executing.length >= concurrency) {
+                    await Promise.race(executing);
                 }
             }
 
-            // Clean up any stragglers
-            if (queue.length > 0) {
-                await Promise.all(queue);
-            }
+            await Promise.all(allPromises);
         };
 
         loadRemaining();
