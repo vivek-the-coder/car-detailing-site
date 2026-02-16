@@ -51,7 +51,7 @@ export default function ServicesPage() {
             </section>
 
             {/* Core Services */}
-            <section className="py-32 space-y-48">
+            <section className="py-24 md:py-32 space-y-32 md:space-y-48">
                 <div className="container-lux">
                     {/* Exterior Detailing */}
                     <ServiceBlock
@@ -241,7 +241,7 @@ interface ServiceBlockProps {
 
 function ServiceBlock({ title, tag, description, image, features, reversed }: ServiceBlockProps) {
     return (
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
             <div className={`${reversed ? "lg:order-2" : ""}`}>
                 <FadeIn direction={reversed ? "left" : "right"}>
                     <p className="text-luxury-sm text-luxury-accent/60 uppercase tracking-[0.3em] font-medium mb-8">{tag}</p>

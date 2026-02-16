@@ -104,14 +104,14 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay - Full Screen Cinematic */}
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-[#030303]/98 backdrop-blur-3xl px-8 pt-32 pb-12 flex flex-col md:hidden">
-          <div className="flex flex-col gap-10">
+        <div className="fixed inset-0 z-40 bg-[#030303]/98 backdrop-blur-3xl px-8 pt-32 pb-12 flex flex-col xl:hidden">
+          <div className="flex flex-col gap-8 md:gap-10 container-lux">
             {navLinks.map((link) => (
               <div key={link.name}>
                 <Link
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-5xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic"
+                  className="text-4xl md:text-6xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic uppercase leading-none"
                 >
                   {link.name}
                 </Link>
@@ -119,13 +119,13 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="mt-auto">
+          <div className="mt-auto container-lux">
             <Link
               href="/book"
               onClick={(e) => handleNavClick(e, "/book")}
-              className="w-full py-7 block text-center rounded-full border border-white/10 bg-white/5 text-white font-bold uppercase tracking-[0.3em] text-[11px]"
+              className="w-full py-6 md:py-8 block text-center rounded-full border border-[#00ff41]/20 bg-[#00ff41]/5 text-[#00ff41] font-bold uppercase tracking-[0.3em] text-[10px] md:text-[12px] hover:bg-[#00ff41] hover:text-black transition-all"
             >
-              Book Now
+              Book Reservation
             </Link>
           </div>
         </div>
