@@ -1,15 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { frameStore } from "@/lib/frameStore";
+import { FrameBuffer } from "@/lib/frameBuffer";
 
-if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-}
-
-const FRAME_COUNT = 336;
+const TOTAL_FRAMES = 336; // Matches your actual frame count
 
 // --- Precise frame-mapped scenes for mobile storytelling ---
 const SCENES = [
@@ -64,166 +58,111 @@ const SCENES = [
 ];
 
 export default function ScrollCanvas() {
-    const sectionRef = useRef<HTMLDivElement>(null);
-    const pinRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const bufferRef = useRef(new FrameBuffer());
     const [activeScene, setActiveScene] = useState(SCENES[0]);
-    const lastSceneIdRef = useRef<number>(-1);
-
-    // Physics-based scrolling state refs
-    const renderState = useRef({
-        currentFrame: 0,
-        targetFrame: 0
-    });
-    const rafId = useRef<number>(0);
-
-    // Background loading for remaining frames
-    useEffect(() => {
-        const initialFrames = 63;
-        const totalFrames = FRAME_COUNT;
-
-        // Concurrent Background Loader
-        const loadRemaining = async () => {
-            const concurrency = 4;
-            const queue: Promise<void>[] = [];
-
-            const loadFrame = async (i: number) => {
-                if (frameStore.bitmaps[i]) return; // Skip if already loaded
-
-                const url = `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
-                try {
-                    const response = await fetch(url, { cache: "force-cache" });
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const blob = await response.blob();
-                    const bitmap = await createImageBitmap(blob);
-                    frameStore.bitmaps[i] = bitmap;
-                } catch (e) {
-                    console.error(`Background preload failed for frame ${i}`, e);
-                }
-            };
-
-
-            for (let i = initialFrames + 1; i <= totalFrames; i++) {
-                queue.push(loadFrame(i));
-
-                if (queue.length === concurrency) {
-                    await Promise.all(queue);
-                    queue.length = 0;
-                    // minimal yield to keep main thread breathing
-                    await new Promise(r => setTimeout(r, 10));
-                }
-            }
-
-            // Clean up any stragglers
-            if (queue.length > 0) {
-                await Promise.all(queue);
-            }
-        };
-
-        loadRemaining();
-    }, []);
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            if (!canvasRef.current) return;
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-            if (!context) return;
+        const canvas = canvasRef.current!;
+        const context = canvas.getContext("2d", { alpha: false }); // Optimization
+        if (!context) return;
 
-            const render = (index: number) => {
-                const img = frameStore.bitmaps[index];
-                if (!img) return;
+        let currentFrame = 1;
+        let ticking = false;
 
-                context.clearRect(0, 0, canvas.width, canvas.height);
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            render(currentFrame);
+        }
 
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                const isMobile = window.innerWidth < 768;
+        window.addEventListener("resize", resize);
+        resize();
 
-                const imgWidth = img.width;
-                const imgHeight = img.height;
+        function getFrameFromScroll() {
+            const scrollTop = window.scrollY;
+            // Use existing document height logic since we probably removed the PIN trigger
+            const scrollHeight = document.body.scrollHeight - window.innerHeight;
+            const progress = Math.max(0, Math.min(1, scrollTop / scrollHeight));
 
-                // Optimized scaling math: 'contain' for mobile (+ subtle zoom), 'cover' for desktop
-                const scale = isMobile
-                    ? Math.min(canvas.width / imgWidth, canvas.height / imgHeight) * 1.25
-                    : Math.max(canvas.width / imgWidth, canvas.height / imgHeight);
+            return Math.min(
+                TOTAL_FRAMES,
+                Math.max(1, Math.floor(progress * TOTAL_FRAMES))
+            );
+        }
 
-                const x = (canvas.width - imgWidth * scale) / 2;
-                const y = (canvas.height - imgHeight * scale) / 2;
-
-                context.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
-            };
-
-            const setCanvasSize = () => {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                canvas.width = window.innerWidth * dpr;
-                canvas.height = window.innerHeight * dpr;
-                render(Math.round(renderState.current.currentFrame));
-            };
-            setCanvasSize();
-
-            const handleResize = () => {
-                setCanvasSize();
-            };
-            window.addEventListener("resize", handleResize);
-
-            // Initial frame render
-            render(0);
-
-            const animate = () => {
-                const state = renderState.current;
-                const diff = state.targetFrame - state.currentFrame;
-
-                // Allow very small movements and always allow frame 0
-                if (Math.abs(diff) > 0.001 || state.currentFrame === 0) {
-                    state.currentFrame += diff * 0.1; // Slightly faster tracking
-                    const currentFrameInt = Math.round(state.currentFrame);
-
-                    if (currentFrameInt >= 0 && currentFrameInt < FRAME_COUNT) {
-                        render(currentFrameInt);
-                        const matchedScene = SCENES.find(scene => currentFrameInt >= scene.start && currentFrameInt <= scene.end);
-                        if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
-                            lastSceneIdRef.current = matchedScene.id;
-                            setActiveScene(matchedScene);
-                        }
-                    }
+        async function render(frame: number) {
+            try {
+                // Determine active scene based on frame
+                const scene = SCENES.find(s => frame >= s.start && frame <= s.end);
+                if (scene && scene.id !== activeScene.id) {
+                    setActiveScene(scene);
                 }
-                rafId.current = requestAnimationFrame(animate);
-            };
-            rafId.current = requestAnimationFrame(animate);
 
-            // Robust PINNING & LOCK
-            ScrollTrigger.create({
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "+=5000",
-                pin: true,
-                pinSpacing: true,
-                scrub: 1,
-                anticipatePin: 1,
-                onUpdate: (self) => {
-                    renderState.current.targetFrame = self.progress * (FRAME_COUNT - 1);
-                }
-            });
+                const bitmap = await bufferRef.current.load(frame);
 
-            return () => {
-                window.removeEventListener("resize", handleResize);
-                cancelAnimationFrame(rafId.current);
-            };
-        }, sectionRef);
+                context!.clearRect(0, 0, canvas.width, canvas.height);
+
+                // calculate cover
+                const scale = Math.max(
+                    canvas.width / bitmap.width,
+                    canvas.height / bitmap.height
+                );
+
+                const x = (canvas.width - bitmap.width * scale) / 2;
+                const y = (canvas.height - bitmap.height * scale) / 2;
+
+                context!.drawImage(
+                    bitmap,
+                    x,
+                    y,
+                    bitmap.width * scale,
+                    bitmap.height * scale
+                );
+            } catch (e) {
+                // Silent catch for frame loading errors during fast scroll
+            }
+        }
+
+        function update() {
+            const frame = getFrameFromScroll();
+
+            if (frame !== currentFrame) {
+                currentFrame = frame;
+                render(frame);
+                bufferRef.current.updateBuffer(frame, TOTAL_FRAMES);
+            }
+            ticking = false;
+        }
+
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(update);
+                ticking = true;
+            }
+        }
+
+        window.addEventListener("scroll", onScroll);
+
+        // Instant start: Load frame 1
+        bufferRef.current.load(1).then(() => render(1));
+        // Preload initial buffer
+        bufferRef.current.updateBuffer(1, TOTAL_FRAMES);
 
         return () => {
-            ctx.revert();
-            // Full Cleanup
-            ScrollTrigger.getAll().forEach(t => t.kill());
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", resize);
         };
-    }, []);
+    }, []); // Removed dependency on activeScene to prevent re-binding scroll listener constantly
 
     return (
-        <section ref={sectionRef} className="bg-black relative">
-            <div
-                ref={pinRef}
-                className="h-[100dvh] w-full bg-black relative overflow-hidden"
-            >
+        <section className="relative h-[500vh] bg-black">
+            {/* 
+                We need explicit height to allow scrolling since we removed GSAP pin. 
+                500vh ensures roughly enough scroll distance for the video length.
+            */}
+
+            <div className="sticky top-0 h-screen w-full overflow-hidden">
                 {/* Cinematic Overlay Text (Mobile Only) */}
                 <div className="md:hidden absolute inset-0 z-20 pointer-events-none flex flex-col justify-between py-16 px-6">
                     <div key={activeScene?.id + "-top"} className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 animate-in fade-in slide-in-from-bottom-2">
