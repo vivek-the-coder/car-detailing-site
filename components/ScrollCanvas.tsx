@@ -83,67 +83,85 @@ export default function ScrollCanvas() {
             if (!context) return;
 
             const setCanvasSize = () => {
-                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                const dpr = Math.min(window.devicePixelRatio || 1, 2); // Increased for sharper frames
                 canvas.width = window.innerWidth * dpr;
                 canvas.height = window.innerHeight * dpr;
-                canvas.style.width = `${window.innerWidth}px`;
-                canvas.style.height = `${window.innerHeight}px`;
-                context.scale(dpr, dpr);
+                render(Math.round(renderState.current.currentFrame));
             };
             setCanvasSize();
 
             const handleResize = () => {
                 setCanvasSize();
-                render(Math.round(renderState.current.currentFrame));
             };
             window.addEventListener("resize", handleResize);
-
-            if (images.current.length === 0) {
-                for (let i = 0; i < FRAME_COUNT; i++) {
-                    const img = new Image();
-                    img.src = `/frames/frame_${String(i + 1).padStart(4, "0")}.jpg`;
-                    images.current.push(img);
-                }
-            }
 
             const render = (index: number) => {
                 const img = images.current[index];
                 if (!img || !img.complete || img.naturalWidth === 0) return;
-                context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
                 const isMobile = window.innerWidth < 768;
+
+                // Optimized scaling math
                 const scale = isMobile
-                    ? Math.min(window.innerWidth / img.width, window.innerHeight / img.height) * 1.25
-                    : Math.max(window.innerWidth / img.width, window.innerHeight / img.height);
-                const x = (window.innerWidth - img.width * scale) / 2;
-                const y = (window.innerHeight - img.height * scale) / 2;
+                    ? Math.max(canvas.width / img.width, canvas.height / img.height) * 1.05
+                    : Math.max(canvas.width / img.width, canvas.height / img.height);
+
+                const x = (canvas.width - img.width * scale) / 2;
+                const y = (canvas.height - img.height * scale) / 2;
+
                 context.drawImage(img, x, y, img.width * scale, img.height * scale);
             };
+
+            if (images.current.length === 0) {
+                // Priority load first frame immediately
+                const firstImg = new Image();
+                firstImg.src = `/frames/frame_0001.jpg`;
+                firstImg.onload = () => render(0);
+
+                for (let i = 0; i < FRAME_COUNT; i++) {
+                    const img = new Image();
+                    img.src = `/frames/frame_${String(i + 1).padStart(4, "0")}.jpg`;
+                    // Only render if it's the first frame to avoid flickering during batch load
+                    if (i === 0) img.onload = () => render(0);
+                    images.current.push(img);
+                }
+            } else {
+                // Ensure initial frame even if already loaded
+                render(0);
+            }
 
             const animate = () => {
                 const state = renderState.current;
                 const diff = state.targetFrame - state.currentFrame;
-                if (Math.abs(diff) > 0.05) {
-                    state.currentFrame += diff * 0.08;
+
+                // Allow very small movements and always allow frame 0
+                if (Math.abs(diff) > 0.001 || state.currentFrame === 0) {
+                    state.currentFrame += diff * 0.1; // Slightly faster tracking
                     const currentFrameInt = Math.round(state.currentFrame);
-                    render(currentFrameInt);
-                    const matchedScene = SCENES.find(scene => currentFrameInt >= scene.start && currentFrameInt <= scene.end);
-                    if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
-                        lastSceneIdRef.current = matchedScene.id;
-                        setActiveScene(matchedScene);
+
+                    if (currentFrameInt >= 0 && currentFrameInt < FRAME_COUNT) {
+                        render(currentFrameInt);
+                        const matchedScene = SCENES.find(scene => currentFrameInt >= scene.start && currentFrameInt <= scene.end);
+                        if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
+                            lastSceneIdRef.current = matchedScene.id;
+                            setActiveScene(matchedScene);
+                        }
                     }
                 }
                 rafId.current = requestAnimationFrame(animate);
             };
-            animate();
+            rafId.current = requestAnimationFrame(animate);
 
-            // PINNING THE INNER TARGET
+            // Robust PINNING
             ScrollTrigger.create({
-                trigger: pinRef.current,
+                trigger: sectionRef.current,
                 start: "top top",
-                end: "+=4000",
-                pin: true,
-                scrub: true,
-                anticipatePin: 1,
+                end: "+=5000", // Increased scroll length for more cinematic feel
+                pin: pinRef.current,
+                scrub: 1, // Smoother scrubbing
                 onUpdate: (self) => {
                     renderState.current.targetFrame = self.progress * (FRAME_COUNT - 1);
                 }
@@ -157,8 +175,9 @@ export default function ScrollCanvas() {
 
         return () => {
             ctx.revert();
-            // Fail-safe: ensure all triggers for this section are absolutely dead
-            ScrollTrigger.getAll().forEach(t => t.kill(true));
+            ScrollTrigger.getAll().forEach(t => {
+                if (t.trigger === sectionRef.current) t.kill(true);
+            });
         };
     }, []);
 
