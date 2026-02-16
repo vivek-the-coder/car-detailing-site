@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { clsx } from "clsx";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -91,50 +90,33 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Overlay - Full Screen Cinematic */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: "circOut" }}
-            className="fixed inset-0 z-40 bg-[#030303]/98 backdrop-blur-3xl px-8 pt-32 pb-12 flex flex-col md:hidden"
-          >
-            <div className="flex flex-col gap-10">
-              {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 + 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      {isOpen && (
+        <div className="fixed inset-0 z-40 bg-[#030303]/98 backdrop-blur-3xl px-8 pt-32 pb-12 flex flex-col md:hidden">
+          <div className="flex flex-col gap-10">
+            {navLinks.map((link, index) => (
+              <div key={link.name}>
+                <Link
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="text-5xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic"
                 >
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="text-5xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic"
-                  >
-                    {link.name}
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+                  {link.name}
+                </Link>
+              </div>
+            ))}
+          </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-auto"
+          <div className="mt-auto">
+            <Link
+              href="/book"
+              onClick={() => setIsOpen(false)}
+              className="w-full py-7 block text-center rounded-full border border-white/10 bg-white/5 text-white font-bold uppercase tracking-[0.3em] text-[11px]"
             >
-              <button
-                onClick={() => setIsOpen(false)}
-                className="w-full py-7 rounded-full border border-white/10 bg-white/5 text-white font-bold uppercase tracking-[0.3em] text-[11px]"
-              >
-                Book Now
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              Book Now
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
