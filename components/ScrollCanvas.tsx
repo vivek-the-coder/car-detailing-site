@@ -4,64 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { frameStore } from "@/lib/frameStore";
+import { SCENES } from "@/lib/scenes";
+import { frameQueue } from "@/lib/sceneLoader";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
 const FRAME_COUNT = 336;
-
-// --- Precise frame-mapped scenes for mobile storytelling ---
-const SCENES = [
-    {
-        id: 0,
-        start: 0,
-        end: 62,
-        tag: "ORIGIN",
-        title: "Where perfection enters the light",
-        desc: "Every masterpiece begins with precise positioning"
-    },
-    {
-        id: 1,
-        start: 63,
-        end: 98,
-        tag: "ANALYSIS",
-        title: "Every imperfection revealed",
-        desc: "Microscopic defects exposed under controlled LED inspection"
-    },
-    {
-        id: 2,
-        start: 99,
-        end: 151,
-        tag: "PROTECTION",
-        title: "Engineered defense applied by hand",
-        desc: "Paint protection film applied with surgical precision"
-    },
-    {
-        id: 3,
-        start: 152,
-        end: 212,
-        tag: "CERAMIC",
-        title: "Molecular-level ceramic bonding",
-        desc: "Ultra-hydrophobic shield enhancing gloss and durability"
-    },
-    {
-        id: 4,
-        start: 213,
-        end: 285,
-        tag: "ISOLATION",
-        title: "Sealed from the outside world",
-        desc: "Controlled curing environment ensures flawless finish"
-    },
-    {
-        id: 5,
-        start: 286,
-        end: 336,
-        tag: "REVEAL",
-        title: "Perfection, realized",
-        desc: "A finish defined by absolute clarity and depth"
-    }
-];
 
 export default function ScrollCanvas() {
     const sectionRef = useRef<HTMLDivElement>(null);
@@ -70,6 +20,9 @@ export default function ScrollCanvas() {
     const [activeScene, setActiveScene] = useState(SCENES[0]);
     const lastSceneIdRef = useRef<number>(-1);
 
+    // Track loaded scene sets to prevent redundant checks
+    const loadedScenes = useRef(new Set<number>());
+
     // Physics-based scrolling state refs
     const renderState = useRef({
         currentFrame: 0,
@@ -77,52 +30,22 @@ export default function ScrollCanvas() {
     });
     const rafId = useRef<number>(0);
 
-    // Background loading for remaining frames
+    // Initial Startup Preload: Scenes 0 + 1 (The prompt implies 0-indexed scenes)
+    // "Startup: Preload Scene 1 + Scene 2" -> In our 0-indexed array, that's Scene 0 and Scene 1.
     useEffect(() => {
-        const initialFrames = 63;
-        const totalFrames = FRAME_COUNT;
-
-        // Concurrent Background Loader
-        const loadRemaining = async () => {
-            const concurrency = 4;
-            const executing: Promise<void>[] = [];
-            const allPromises: Promise<void>[] = [];
-
-            const loadFrame = async (i: number) => {
-                if (frameStore.bitmaps[i]) return; // Skip if already loaded
-
-                const url = `/frames/frame_${String(i).padStart(4, "0")}.webp`;
-                try {
-                    const response = await fetch(url, { cache: "force-cache" });
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const blob = await response.blob();
-                    const bitmap = await createImageBitmap(blob);
-                    frameStore.bitmaps[i] = bitmap;
-                } catch (e) {
-                    console.error(`Background preload failed for frame ${i}`, e);
-                }
-            };
-
-
-            for (let i = initialFrames + 1; i <= totalFrames; i++) {
-                const p = loadFrame(i);
-                allPromises.push(p);
-
-                const e: Promise<void> = p.then(() => {
-                    executing.splice(executing.indexOf(e), 1);
-                });
-                executing.push(e);
-
-                if (executing.length >= concurrency) {
-                    await Promise.race(executing);
-                }
-            }
-
-            await Promise.all(allPromises);
+        const preloadStartup = async () => {
+            // SCENES[0] is loaded by page.tsx (1-63), but we ensure it here + load scene 1
+            // sceneLoader handles internal checks if already loaded.
+            await frameQueue.preloadScenes([0, 1]);
+            loadedScenes.current.add(0);
+            loadedScenes.current.add(1);
         };
-
-        loadRemaining();
+        preloadStartup();
     }, []);
+
+    const getScene = (frame: number) => {
+        return SCENES.findIndex(s => frame >= s.start && frame <= s.end);
+    };
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -181,10 +104,26 @@ export default function ScrollCanvas() {
 
                     if (currentFrameInt >= 0 && currentFrameInt < FRAME_COUNT) {
                         render(currentFrameInt);
-                        const matchedScene = SCENES.find(scene => currentFrameInt >= scene.start && currentFrameInt <= scene.end);
+
+                        // Scene Logic
+                        const matchedSceneIndex = getScene(currentFrameInt);
+                        const matchedScene = SCENES[matchedSceneIndex];
+
                         if (matchedScene && matchedScene.id !== lastSceneIdRef.current) {
                             lastSceneIdRef.current = matchedScene.id;
                             setActiveScene(matchedScene);
+                        }
+
+                        // Predictive Preload Logic
+                        if (matchedSceneIndex !== -1 && !loadedScenes.current.has(matchedSceneIndex)) {
+                            // Mark current scene as fully "visited/active" so we don't trigger again
+                            loadedScenes.current.add(matchedSceneIndex);
+
+                            // Preload next 2 scenes
+                            // e.g. if current is 1, load 2 and 3.
+                            const nextScenes = [matchedSceneIndex + 1, matchedSceneIndex + 2];
+                            // Filter valid scenes only (handled in loader)
+                            frameQueue.preloadScenes(nextScenes);
                         }
                     }
                 }
