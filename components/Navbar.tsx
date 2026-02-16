@@ -48,7 +48,7 @@ export default function Navbar() {
       className={clsx(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b flex items-center",
         isOpen
-          ? "h-16 md:h-24 metal-blur border-white/10"
+          ? "h-16 md:h-24 bg-transparent border-white/10"
           : scrolled
             ? "h-16 md:h-24 bg-black/60 backdrop-blur-xl border-white/5"
             : "h-16 md:h-28 bg-transparent border-transparent"
@@ -115,11 +115,11 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-40 metal-blur px-8 pt-32 pb-12 flex flex-col xl:hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 left-0 top-0 w-full h-full z-40 metal-blur px-8 pt-32 pb-12 flex flex-col xl:hidden"
           >
             {/* Texture Layer */}
             <div className="absolute inset-0 noise-texture opacity-[0.03] pointer-events-none" />
