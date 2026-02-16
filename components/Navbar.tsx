@@ -91,10 +91,10 @@ export default function Navbar() {
 
       {/* Main Navbar - Floating Above */}
       <nav className={clsx(
-        "relative z-[10] w-full max-w-[1700px] metal-blur metal-border rounded-[2rem] flex flex-row items-center justify-between px-6 py-3 md:px-10 md:py-4 pointer-events-auto transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)",
+        "relative z-[10] w-full max-w-[1700px] rounded-[2rem] flex flex-row items-center justify-between px-6 py-3 md:px-10 md:py-4 pointer-events-auto transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)",
         scrolled
-          ? "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] border-white/20 bg-black/80 backdrop-blur-3xl"
-          : "shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border-white/10 bg-black/40"
+          ? "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/10 bg-black/40 backdrop-blur-md"
+          : "border border-transparent bg-transparent"
       )}>
         {/* Brand Section */}
         <div className="flex items-center gap-12">
