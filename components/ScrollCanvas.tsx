@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
 
 const FRAME_COUNT = 336;
 
@@ -82,19 +84,6 @@ export default function ScrollCanvas() {
             const context = canvas.getContext("2d");
             if (!context) return;
 
-            const setCanvasSize = () => {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2); // Increased for sharper frames
-                canvas.width = window.innerWidth * dpr;
-                canvas.height = window.innerHeight * dpr;
-                render(Math.round(renderState.current.currentFrame));
-            };
-            setCanvasSize();
-
-            const handleResize = () => {
-                setCanvasSize();
-            };
-            window.addEventListener("resize", handleResize);
-
             const render = (index: number) => {
                 const img = images.current[index];
                 if (!img || !img.complete || img.naturalWidth === 0) return;
@@ -114,6 +103,19 @@ export default function ScrollCanvas() {
 
                 context.drawImage(img, x, y, img.width * scale, img.height * scale);
             };
+
+            const setCanvasSize = () => {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                render(Math.round(renderState.current.currentFrame));
+            };
+            setCanvasSize();
+
+            const handleResize = () => {
+                setCanvasSize();
+            };
+            window.addEventListener("resize", handleResize);
 
             if (images.current.length === 0) {
                 // Priority load first frame immediately
