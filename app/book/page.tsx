@@ -8,10 +8,10 @@ export default function BookPage() {
     const [form, setForm] = useState({
         name: "",
         car: "",
-        type: "Luxury Sedan",
+        category: "Luxury",
         service: "",
         date: "",
-        slot: "Morning (9 AM - 12 PM)",
+        time: "Morning (9 AM – 12 PM)",
         phone: "",
     });
 
@@ -27,17 +27,24 @@ export default function BookPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const message = `✨ *New Booking Request - The Detailing Aura* ✨
+        const message = `Booking Request — The Detailing Aura
 
-👤 *Client:* ${form.name}
-🚗 *Vehicle:* ${form.car} (${form.type})
-🛠️ *Service:* ${form.service}
+Client Details
+Name: ${form.name}
+Phone: +91 ${form.phone}
 
-📅 *Preferred Date:* ${form.date}
-⏰ *Time Slot:* ${form.slot}
-📱 *Phone:* ${form.phone}
+Vehicle Details
+Vehicle: ${form.car}
+Category: ${form.category}
 
-_Request sent via website booking engine._`;
+Service Requested
+Service: ${form.service}
+
+Schedule
+Preferred Date: ${form.date}
+Preferred Time Slot: ${form.time}
+
+This booking request was submitted via the official website.`;
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/919979068777?text=${encodedMessage}`;
@@ -104,14 +111,14 @@ _Request sent via website booking engine._`;
                                     <div className="space-y-2">
                                         <label className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold ml-4">Vehicle Category</label>
                                         <select
-                                            name="type"
+                                            name="category"
                                             onChange={handleChange}
                                             className="w-full bg-white/[0.03] border border-white/5 p-5 rounded-2xl outline-none focus:border-luxury-accent/50 transition-colors text-white/70 font-light appearance-none"
                                         >
-                                            <option className="bg-zinc-900">Luxury Sedan</option>
-                                            <option className="bg-zinc-900">Premium SUV</option>
-                                            <option className="bg-zinc-900">Supercar / Sports</option>
-                                            <option className="bg-zinc-900">Executive Hatchback</option>
+                                            <option className="bg-zinc-900">Hatchback</option>
+                                            <option className="bg-zinc-900">Sedan</option>
+                                            <option className="bg-zinc-900">SUV</option>
+                                            <option className="bg-zinc-900">Luxury</option>
                                         </select>
                                     </div>
                                 </div>
@@ -152,13 +159,13 @@ _Request sent via website booking engine._`;
                                         <div className="space-y-2">
                                             <label className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold ml-4">Preferred Slot</label>
                                             <select
-                                                name="slot"
+                                                name="time"
                                                 onChange={handleChange}
                                                 className="w-full bg-white/[0.03] border border-white/5 p-5 rounded-2xl outline-none focus:border-luxury-accent/50 transition-colors text-white/70 font-light appearance-none"
                                             >
-                                                <option className="bg-zinc-900">Morning (9 AM - 12 PM)</option>
-                                                <option className="bg-zinc-900">Afternoon (1 PM - 4 PM)</option>
-                                                <option className="bg-zinc-900">Evening (4 PM - 7 PM)</option>
+                                                <option className="bg-zinc-900">Morning (9 AM – 12 PM)</option>
+                                                <option className="bg-zinc-900">Afternoon (1 PM – 4 PM)</option>
+                                                <option className="bg-zinc-900">Evening (5 PM – 7 PM)</option>
                                             </select>
                                         </div>
                                     </div>
