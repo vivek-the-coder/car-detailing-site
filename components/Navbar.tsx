@@ -47,9 +47,11 @@ export default function Navbar() {
     <nav
       className={clsx(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b flex items-center",
-        isOpen || scrolled
-          ? "h-16 md:h-24 bg-black/60 backdrop-blur-xl border-white/5"
-          : "h-16 md:h-28 bg-transparent border-transparent"
+        isOpen
+          ? "h-16 md:h-24 metal-blur border-white/10"
+          : scrolled
+            ? "h-16 md:h-24 bg-black/60 backdrop-blur-xl border-white/5"
+            : "h-16 md:h-28 bg-transparent border-transparent"
       )}
     >
       <div className="w-full px-6 md:px-12 flex items-center justify-between mx-auto max-w-[1800px]">
