@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export default function LoadingScreen({
     progress,
@@ -10,11 +11,28 @@ export default function LoadingScreen({
     progress: number;
     isFinished: boolean;
 }) {
+    const [isExiting, setIsExiting] = useState(false);
+
+    useEffect(() => {
+        if (isFinished) {
+            setIsExiting(true);
+        }
+    }, [isFinished]);
+
+    useEffect(() => {
+        // Lock scroll during loading
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, []);
+
     return (
         <AnimatePresence>
             {!isFinished && (
                 <motion.div
                     initial={{ opacity: 1 }}
+                    animate={{ opacity: isExiting ? 0 : 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                     className="fixed inset-0 bg-black text-white z-[9999] flex flex-col items-center justify-center overflow-hidden"

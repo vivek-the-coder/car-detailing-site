@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { frameStore } from "@/lib/frameStore";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -74,7 +75,6 @@ export default function ScrollCanvas() {
         currentFrame: 0,
         targetFrame: 0
     });
-    const images = useRef<(HTMLImageElement | ImageBitmap | null)[]>([]);
     const rafId = useRef<number>(0);
 
     useEffect(() => {
@@ -85,20 +85,16 @@ export default function ScrollCanvas() {
             if (!context) return;
 
             const render = (index: number) => {
-                const img = images.current[index];
+                const img = frameStore.bitmaps[index];
                 if (!img) return;
-
-                // Handle both HTMLImageElement and ImageBitmap
-                const isBitmap = img instanceof ImageBitmap;
-                if (!isBitmap && (!(img as HTMLImageElement).complete || (img as HTMLImageElement).naturalWidth === 0)) return;
 
                 context.clearRect(0, 0, canvas.width, canvas.height);
 
                 const dpr = Math.min(window.devicePixelRatio || 1, 2);
                 const isMobile = window.innerWidth < 768;
 
-                const imgWidth = isBitmap ? (img as ImageBitmap).width : (img as HTMLImageElement).width;
-                const imgHeight = isBitmap ? (img as ImageBitmap).height : (img as HTMLImageElement).height;
+                const imgWidth = img.width;
+                const imgHeight = img.height;
 
                 // Optimized scaling math: 'contain' for mobile (+ subtle zoom), 'cover' for desktop
                 const scale = isMobile
@@ -124,35 +120,8 @@ export default function ScrollCanvas() {
             };
             window.addEventListener("resize", handleResize);
 
-            if (images.current.length === 0) {
-                // Initialize array
-                images.current = new Array(FRAME_COUNT).fill(null);
-
-                // Load all frames. Browsers will use cached versions from preloader for first 100
-                for (let i = 0; i < FRAME_COUNT; i++) {
-                    const url = `/frames/frame_${String(i + 1).padStart(4, "0")}.jpg`;
-
-                    // Use ImageBitmap for better performance if supported (which it is in modern browsers)
-                    fetch(url)
-                        .then(res => res.blob())
-                        .then(blob => createImageBitmap(blob))
-                        .then(bitmap => {
-                            images.current[i] = bitmap;
-                            if (i === 0) render(0);
-                        })
-                        .catch(() => {
-                            // Fallback to traditional Image if fetch fails
-                            const img = new Image();
-                            img.src = url;
-                            img.onload = () => {
-                                images.current[i] = img;
-                                if (i === 0) render(0);
-                            };
-                        });
-                }
-            } else {
-                render(0);
-            }
+            // Initial frame render
+            render(0);
 
             const animate = () => {
                 const state = renderState.current;

@@ -1,31 +1,37 @@
-export async function preloadCriticalFrames(
-    totalFrames: number,
-    onProgress: (progress: number) => void
-): Promise<(ImageBitmap | null)[]> {
+export async function preloadAllFrames({
+    totalFrames,
+    onProgress,
+}: {
+    totalFrames: number;
+    onProgress: (progress: number) => void;
+}): Promise<(ImageBitmap | null)[]> {
     const bitmaps: (ImageBitmap | null)[] = new Array(totalFrames + 1).fill(null);
-    const criticalCount = Math.min(totalFrames, 100); // Preload first 100 frames for smooth start
 
-    const tasks = [];
+    // We use a small concurrency limit to prevent network congestion while allowing parallel downloads
+    const batchSize = 10;
 
-    for (let i = 1; i <= criticalCount; i++) {
-        const url = `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
+    for (let i = 1; i <= totalFrames; i += batchSize) {
+        const batch = [];
+        for (let j = i; j < i + batchSize && j <= totalFrames; j++) {
+            const url = `/frames/frame_${String(j).padStart(4, "0")}.jpg`;
+            batch.push(
+                (async (index) => {
+                    try {
+                        const response = await fetch(url, { cache: "force-cache" });
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        const blob = await response.blob();
+                        const bitmap = await createImageBitmap(blob);
+                        bitmaps[index] = bitmap;
+                    } catch (error) {
+                        console.error(`Error preloading frame ${index}:`, error);
+                    }
+                })(j)
+            );
+        }
 
-        tasks.push(
-            (async () => {
-                try {
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error(`Failed to fetch ${url}`);
-                    const blob = await res.blob();
-                    const bitmap = await createImageBitmap(blob);
-                    bitmaps[i] = bitmap;
-                    onProgress((i / criticalCount) * 100);
-                } catch (error) {
-                    console.error(`Error preloading frame ${i}:`, error);
-                }
-            })()
-        );
+        await Promise.all(batch);
+        onProgress((Math.min(i + batchSize - 1, totalFrames) / totalFrames) * 100);
     }
 
-    await Promise.all(tasks);
     return bitmaps;
 }

@@ -13,33 +13,45 @@ import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
-import { preloadCriticalFrames } from "@/lib/preloadFrames";
+import { preloadAllFrames } from "@/lib/preloadFrames";
+import { frameStore } from "@/lib/frameStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
-    // Preload first 100 frames (safe threshold for 336 frames)
-    preloadCriticalFrames(336, setProgress).then(() => {
-      // Small buffer for smoothness
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 800);
+    // 1. Minimum duration for brand impact
+    const timer = setTimeout(() => {
+      setMinTimeElapsed(true);
+    }, 2500);
+
+    // 2. Full frame preloading (336 frames)
+    preloadAllFrames({
+      totalFrames: 336,
+      onProgress: setProgress,
+    }).then((bitmaps) => {
+      frameStore.bitmaps = bitmaps;
+      setIsLoading(false);
     });
+
+    return () => clearTimeout(timer);
   }, []);
+
+  const isActuallyFinished = !isLoading && minTimeElapsed;
 
   return (
     <>
-      <LoadingScreen progress={progress} isFinished={!isLoading} />
+      <LoadingScreen progress={progress} isFinished={isActuallyFinished} />
 
       <AnimatePresence>
-        {!isLoading && (
+        {isActuallyFinished && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
           >
             <Hero />
             <HeroDesktop />
