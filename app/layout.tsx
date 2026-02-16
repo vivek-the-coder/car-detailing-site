@@ -13,15 +13,20 @@ export const metadata: Metadata = {
   description: "Experience the prestige of a professionally detailed car, radiating elegance and refinement at every turn.",
 };
 
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-black text-white`}>
-        {children}
+    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+      <body className={`${inter.className} bg-black text-white antialiased selection:bg-luxury-accent selection:text-black`}>
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

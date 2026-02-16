@@ -17,10 +17,12 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Services", href: "#services" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "About Us", href: "#about" },
-    { name: "Contact", href: "#contact" },
+    { name: "Services", href: "/services" },
+    { name: "Protection", href: "/protection" },
+    { name: "Portfolio", href: "/portfolio" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -48,13 +50,13 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Desktop Links - Minimalist Luxury */}
-        <div className="hidden md:flex items-center gap-16">
+        {/* Center Navigation - Premium Spacing */}
+        <div className="hidden xl:flex items-center gap-12 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-[11px] uppercase tracking-[0.3em] font-medium text-white/40 hover:text-white transition-all duration-500"
+              className="text-[11px] uppercase tracking-[0.25em] font-bold text-white/50 hover:text-luxury-accent transition-colors duration-300"
             >
               {link.name}
             </Link>
@@ -62,10 +64,13 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-8">
-          <button className="hidden lg:block group relative overflow-hidden rounded-full border border-white/10 px-10 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-all duration-500 hover:border-white/30">
+          <Link
+            href="/book"
+            className="hidden lg:block group relative overflow-hidden rounded-full border border-white/10 px-10 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-all duration-500 hover:border-white/30"
+          >
             <span className="relative z-10">Book Now</span>
             <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 opacity-10" />
-          </button>
+          </Link>
 
           {/* Premium 2-Bar Hamburger */}
           <button

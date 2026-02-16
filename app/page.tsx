@@ -13,7 +13,6 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <>
-      <Navbar />
       <Hero />
       <HeroDesktop />
       <ScrollCanvas />
@@ -23,7 +22,6 @@ export default function Home() {
       <Features />
       <Pricing />
       <CTA />
-      <Footer />
     </>
   );
 }
