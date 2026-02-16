@@ -41,8 +41,57 @@ export default function Navbar() {
 
   return (
     <div className="fixed top-0 inset-x-0 z-[100] flex justify-center p-4 md:p-6 pointer-events-none">
+
+      {/* Mobile Menu - Fullscreen Underlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#030303]/95 backdrop-blur-3xl z-[0] flex flex-col items-center justify-center pointer-events-auto"
+          >
+            <div className="flex flex-col items-center gap-8 md:gap-12 p-8 w-full max-w-md">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + (i * 0.05), duration: 0.5, ease: "easeOut" }}
+                  className="w-full text-center"
+                >
+                  <Link
+                    href={link.href}
+                    onClick={handleNavClick}
+                    className="block text-4xl md:text-5xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic uppercase leading-tight"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="w-full pt-8 mt-4 border-t border-white/10"
+              >
+                <Link
+                  href="/book"
+                  onClick={handleNavClick}
+                  className="w-full py-5 block text-center rounded-full bg-luxury-accent text-black font-bold uppercase tracking-[0.3em] text-[13px] shadow-[0_0_40px_rgba(0,255,65,0.3)] active:scale-95 transition-transform"
+                >
+                  Establish Aura
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Navbar - Floating Above */}
       <nav className={clsx(
-        "w-full max-w-[1700px] metal-blur metal-border rounded-[2rem] flex items-center justify-between px-6 py-3 md:px-10 md:py-4 pointer-events-auto transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)",
+        "relative z-[10] w-full max-w-[1700px] metal-blur metal-border rounded-[2rem] flex flex-row items-center justify-between px-6 py-3 md:px-10 md:py-4 pointer-events-auto transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)",
         scrolled
           ? "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] border-white/20 bg-black/80 backdrop-blur-3xl"
           : "shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border-white/10 bg-black/40"
@@ -113,64 +162,6 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-
-      {/* Mobile Menu - Heavy Metal Blur */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[-1] lg:hidden pointer-events-auto"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute top-24 right-4 left-4 max-w-lg ml-auto metal-blur border border-white/10 rounded-[2.5rem] p-10 md:p-14 shadow-[0_60px_120px_rgba(0,0,0,1)] z-40 pointer-events-auto lg:hidden"
-            >
-              <div className="flex flex-col gap-8">
-                {navLinks.map((link, i) => (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 + (i * 0.05) }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={handleNavClick}
-                      className="text-4xl font-light text-white tracking-tighter hover:text-luxury-accent transition-colors italic uppercase flex items-center justify-between group"
-                    >
-                      {link.name}
-                      <span className="w-10 h-px bg-white/10 group-hover:w-20 group-hover:bg-luxury-accent transition-all duration-500" />
-                    </Link>
-                  </motion.div>
-                ))}
-
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="pt-6 border-t border-white/5"
-                >
-                  <Link
-                    href="/book"
-                    onClick={handleNavClick}
-                    className="w-full py-6 block text-center rounded-2xl bg-luxury-accent text-black font-bold uppercase tracking-[0.3em] text-[13px] shadow-[0_20px_40px_rgba(0,255,65,0.25)] active:scale-95 transition-transform"
-                  >
-                    Establish Aura
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
