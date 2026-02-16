@@ -57,8 +57,8 @@ export default function Home() {
             <Navbar />
             <Hero />
             <HeroDesktop />
-            <ScrollCanvas />
             <Services />
+            <ScrollCanvas />
             <BeforeAfter />
             <Showcase />
             <Features />
